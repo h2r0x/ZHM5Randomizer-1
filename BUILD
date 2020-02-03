@@ -1,5 +1,3 @@
-load("//:build_defs/windows_dll_library.bzl", "windows_dll_library")
-
 cc_binary(
     name = "DINPUT8.dll",
     srcs = glob([
