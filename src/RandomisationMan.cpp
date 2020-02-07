@@ -25,6 +25,7 @@ std::unordered_map<std::string, RandomisationStrategy*(*)()> npcRandomizers{
         {"DEFAULT", &createInstance<NPCItemRandomisation>},
         {"HARD", &createInstance<UnrestrictedNPCRandomization>},
         {"SLEEPY", &createInstance<SleepyNPCRandomization>},
+        {"CHAIN_REACTION", &createInstance<ChainReactionNPCRandomization>},
 };
 
 std::unordered_map<std::string, RandomisationStrategy*(*)()> heroRandomizers{
