@@ -83,6 +83,11 @@ public:
 	const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
 
+class ChainReactionNPCRandomization : public RandomisationStrategy {
+public:
+	const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
+};
+
 class Randomizer {
 private:
 	bool enabled;

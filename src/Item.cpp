@@ -71,7 +71,16 @@ Item::Item(const json& config) {
 		cheat_group = cheat_group_map[config["CheatGroup"].get<std::string>()];
 		common_name = config["CommonName"].get<std::string>();
 		throw_type = throw_type_map[config["ThrowType"].get<std::string>()];
-		silence_rating = SILENCE_RATING_map[config.value("SilenceRating", "NONE")];
+
+		if (config.find("ActorConfiguration") != config.end()) {
+			for (auto& x : config["ActorConfiguration"].items()) {
+				if (x.key() == "SilenceRating") {
+					silence_rating = SILENCE_RATING_map[x.value()];
+				}
+			}			
+		} else {
+			silence_rating = SILENCE_RATING::NONE;
+		}
 	}
 	catch (...) {
 		//There doesn't seem to be a convinient way to tell if a key exists in the json object.
