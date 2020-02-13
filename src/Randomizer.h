@@ -50,6 +50,19 @@ public:
 	void initialize(Scenario scen, const DefaultItemPool* const default_pool) override final;
 };
 
+class TreasureHuntWorldInventoryRandomization : public WorldInventoryRandomisation {
+public:
+	const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
+	void initialize(Scenario scen, const DefaultItemPool* const default_pool) override final;
+};
+
+class NoItemsWorldInventoryRandomization : public WorldInventoryRandomisation {
+public:
+	const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
+	void initialize(Scenario scen, const DefaultItemPool* const default_pool) override final;
+};
+
+
 class NPCItemRandomisation : public RandomisationStrategy {
 public:
 	const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;

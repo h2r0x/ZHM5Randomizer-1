@@ -18,6 +18,8 @@ std::unordered_map<std::string, RandomisationStrategy*(*)()> worldRandomizers{
         {"NONE", &createInstance<IdentityRandomisation>},
         {"DEFAULT", &createInstance<WorldInventoryRandomisation>},
         {"OOPS_ALL_EXPLOSIVES", &createInstance<OopsAllExplosivesWorldInventoryRandomization>},
+        {"TREASURE_HUNT", &createInstance<TreasureHuntWorldInventoryRandomization>},
+        {"NO_ITEMS", &createInstance<NoItemsWorldInventoryRandomization>},
 };
 
 std::unordered_map<std::string, RandomisationStrategy*(*)()> npcRandomizers{

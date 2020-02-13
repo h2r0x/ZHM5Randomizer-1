@@ -56,6 +56,9 @@ void DefaultItemPool::print() const {
 	}
 }
 
+void DefaultItemPool::getIdAt(RepositoryID& repoId, int position) const {
+	repoId = ids[position];
+}
 
 //void DefaultItemPool::get(std::vector<RepositoryID*>& out, std::function<bool(const Item&)> fn) {
 //	auto& repo = Repository::inst();

@@ -149,6 +149,14 @@ bool Item::isDistraction() const {
 	return icon == ICON::DISTRACTION;
 }
 
+bool Item::isPoison() const {
+	return icon == ICON::POISON;
+}
+
+bool Item::isGoodTreasureLocation() const {
+	return !isPoison() && isNotEssentialAndNotWeapon(); 
+}
+
 bool Item::isNotEssentialAndNotWeapon() const {
 	return !isEssential() && !isWeapon();
 }

@@ -78,6 +78,8 @@ public:
 	bool isSuitcase() const;
 	bool isDistraction() const;
 	bool isNotEssentialAndNotWeapon()const;
+	bool isPoison()const;
+	bool isGoodTreasureLocation() const;
 
 	const std::string& string() const;
 	const ICON& getType() const;
