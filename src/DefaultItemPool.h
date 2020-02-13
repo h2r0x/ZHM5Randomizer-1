@@ -24,6 +24,7 @@ public:
 	void getPosition(std::vector<int>& out, bool(Item::* fn)()const) const;
 	size_t getCount(bool(Item::* fn)()const) const;
 	size_t getCount(const RepositoryID&) const;
+	void DefaultItemPool::getIdAt(RepositoryID& repoId, int position) const;
 
 	void print() const;
 	
