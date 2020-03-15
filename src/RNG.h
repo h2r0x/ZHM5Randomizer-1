@@ -2,14 +2,14 @@
 #include <random>
 
 class RNG {
-private:
-	std::mt19937 rng;
+ private:
+  std::mt19937 rng;
 
-	RNG();
-public:
-	static RNG& inst();
+  RNG();
 
-	void seed(uint32_t seed);
-	std::mt19937* getEngine();
+ public:
+  static RNG& inst();
+
+  void seed(uint32_t seed);
+  std::mt19937* getEngine();
 };
-
