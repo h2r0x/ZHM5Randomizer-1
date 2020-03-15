@@ -10,7 +10,8 @@ using json = nlohmann::json;
 class Item;
 
 // Represents a list of items distributed in a level of a given Senario. Default
-// item pools are nessecary for the generation of suitable randomized item pools.
+// item pools are nessecary for the generation of suitable randomized item
+// pools.
 class DefaultItemPool {
  private:
   std::vector<RepositoryID> ids;

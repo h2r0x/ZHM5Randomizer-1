@@ -28,8 +28,9 @@ void Console::log(const char* fmt, ...) {
 
   //	auto log_path = Config::base_directory + "/Retail/ZHM5Randomizer.log";
   //	std::ofstream ofs(log_path.c_str(), std::ofstream::out ||
-  //std::ofstream::app ); 	if (!ofs.is_open()) 		printf("Failed to open log file:
-  //%s\n", log_path.c_str()); 	ofs.write(buf, strlen(buf)); 	ofs.close();
+  // std::ofstream::app ); 	if (!ofs.is_open()) 		printf("Failed to open
+  // log file: %s\n", log_path.c_str()); 	ofs.write(buf, strlen(buf));
+  //ofs.close();
 
   //	printf(buf);
   //}

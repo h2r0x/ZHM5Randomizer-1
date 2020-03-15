@@ -58,7 +58,8 @@ void DefaultItemPool::getIdAt(RepositoryID& repoId, int position) const {
 }
 
 // void DefaultItemPool::get(std::vector<RepositoryID*>& out,
-// std::function<bool(const Item&)> fn) { 	auto& repo = Repository::inst(); 	for
+// std::function<bool(const Item&)> fn) { 	auto& repo = Repository::inst();
+// for
 //(const auto& id : ids) { 		if(fn(repo.getItemByRepositoryID(id)))
 //			out.push_back(&id);
 //	}

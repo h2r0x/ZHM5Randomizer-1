@@ -35,8 +35,8 @@ class IdentityRandomisation : public RandomisationStrategy {
 };
 
 // This randomisation strategy is intended to be used to randomize world items
-// during the initial load of a level. It's desiged to be as undistruptive to the
-// game flow as possible.
+// during the initial load of a level. It's desiged to be as undistruptive to
+// the game flow as possible.
 class WorldInventoryRandomisation : public RandomisationStrategy {
  protected:
   std::queue<const RepositoryID*> item_queue;
