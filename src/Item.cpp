@@ -71,6 +71,8 @@ Item::Item(const json& config) {
 		cheat_group = cheat_group_map[config["CheatGroup"].get<std::string>()];
 		common_name = config["CommonName"].get<std::string>();
 		throw_type = throw_type_map[config["ThrowType"].get<std::string>()];
+		name_LOC_ = config["Name_LOC"].get<std::string>();
+		isCoin_ = config["IsCoin"].get<bool>();
 
 		if (config.find("ActorConfiguration") != config.end()) {
 			for (auto& x : config["ActorConfiguration"].items()) {
@@ -153,8 +155,40 @@ bool Item::isPoison() const {
 	return icon == ICON::POISON;
 }
 
+bool Item::isCoin() const {
+	return isCoin_;
+}
+
 bool Item::isGoodTreasureLocation() const {
-	return !isPoison() && isNotEssentialAndNotWeapon(); 
+	if (isCoin()) {
+		return true;
+	}
+	if (isQuestItem()) {
+		return false;
+	}
+	if (isKey()) {
+		return false;
+	}
+	if (isEssential()) {
+		return false;
+	}
+	if (isPoison()) {
+		return false; // poison can spawn as e.g. frogs or flowers which don't look like their actual item
+		// TODO: See if there's a way to pin down what emetic rat poisons are
+	}
+	if (isPistol()) {
+		return false; // pistols can be locked in safes
+	}
+	if (isMelee()) {
+		return true;
+	}
+	if (isTool()) {
+		return true;
+	}
+	if (isDistraction()) {
+		return true;
+	}
+	return false;
 }
 
 bool Item::isNotEssentialAndNotWeapon() const {

@@ -94,6 +94,7 @@ public:
 class SleepyNPCRandomization : public RandomisationStrategy {
 public:
 	const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
+	bool exception_assigned;
 };
 
 class ChainReactionNPCRandomization : public RandomisationStrategy {

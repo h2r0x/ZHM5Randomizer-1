@@ -57,6 +57,8 @@ class Item {
 	SILENCE_RATING silence_rating;
 
 	std::string common_name;
+	std::string name_LOC_;
+	bool isCoin_;	
 
 public:
 	Item();
@@ -80,11 +82,17 @@ public:
 	bool isNotEssentialAndNotWeapon()const;
 	bool isPoison()const;
 	bool isGoodTreasureLocation() const;
+	bool isCoin() const;
+	bool isDecorativeMeleeItem() const {
+		return !isWeapon() && name_LOC().rfind("ui_prop_melee", 0) == 0;
+	}
 
 	const std::string& string() const;
+	const std::string& name_LOC() const { return name_LOC_; }
 	const ICON& getType() const;
 	const THROW_TYPE& getThrowType() const;
 	const SILENCE_RATING& getSilenceRating() const;
+
 
 	void print() const;
 };
