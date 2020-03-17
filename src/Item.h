@@ -85,7 +85,7 @@ class Item {
   bool isGoodTreasureLocation() const;
   bool isCoin() const;
   bool isDecorativeMeleeItem() const {
-    return !isWeapon() && name_LOC().rfind("ui_prop_melee", 0) == 0;
+    return (!isWeapon()) && name_LOC().rfind("ui_prop_melee", 0) == 0;
   }
 
   const std::string& string() const;

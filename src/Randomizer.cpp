@@ -79,7 +79,7 @@ void WorldInventoryRandomisation::initialize(
                                    new_item_pool.size() -
                                    default_item_pool_weapon_count;
 
-  repo.getRandom(new_item_pool, random_item_count,
+  repo.getRandom(new_item_pool, random_item_count, 
                  &Item::isNotEssentialAndNotWeapon);
 
   // Shuffle item pool
@@ -169,57 +169,49 @@ const RepositoryID* TreasureHuntWorldInventoryRandomization::randomize(
 void TreasureHuntWorldInventoryRandomization::initialize(
     Scenario scen, const DefaultItemPool* const default_pool) {
   std::vector<const RepositoryID*> new_item_pool;
-
-  auto gold_idol = repo.getStablePointer(
-      RepositoryID("4b0def3b-7378-494d-b885-92c334f2f8cb"));
+  
+  auto gold_idol = RepositoryID("4b0def3b-7378-494d-b885-92c334f2f8cb");
   std::vector<int> gold_idol_possible_slots;
   std::vector<int> gold_idol_final_slots;
   default_pool->getPosition(gold_idol_possible_slots,
                             &Item::isGoodTreasureLocation);
+  std::vector<int> used_idxes;
+  int idx;
   for (int i = 0; i < 10; i++) {
-    int idx = rand() % gold_idol_possible_slots.size();
-    gold_idol_final_slots.push_back(idx);
+    do {
+      idx = rand() % gold_idol_possible_slots.size();
+    } while (std::find(used_idxes.begin(), used_idxes.end(), idx) != used_idxes.end());
+    gold_idol_final_slots.push_back(gold_idol_possible_slots[idx]);
+    used_idxes.push_back(idx);
   }
 
   std::vector<int> decorative_item_slots;
   default_pool->getPosition(decorative_item_slots,
                             &Item::isDecorativeMeleeItem);
 
-  auto crowbar = repo.getStablePointer(
-      RepositoryID("01ed6d15-e26e-4362-b1a6-363684a7d0fd"));
-  auto screwdriver = repo.getStablePointer(
-      RepositoryID("12cb6b51-a6dd-4bf5-9653-0ab727820cac"));
-  auto wrench = repo.getStablePointer(
-      RepositoryID("6adddf7e-6879-4d51-a7e2-6a25ffdca6ae"));
+  const std::vector<RepositoryID> tools({
+      RepositoryID("01ed6d15-e26e-4362-b1a6-363684a7d0fd"),
+      RepositoryID("12cb6b51-a6dd-4bf5-9653-0ab727820cac"),
+      RepositoryID("6adddf7e-6879-4d51-a7e2-6a25ffdca6ae")
+  });
 
   for (int i = 0; i < default_pool->size(); i++) {
+    auto& item = RepositoryID("00000000-0000-0000-0000-000000000000");
     if (std::find(gold_idol_final_slots.begin(), gold_idol_final_slots.end(),
                   i) != gold_idol_final_slots.end()) {
-      new_item_pool.insert(new_item_pool.begin() + i, gold_idol);
+      Console::log("adding gold idol: %d\n", i);
+      item = gold_idol;
     } else if (std::find(decorative_item_slots.begin(),
                          decorative_item_slots.end(),
                          i) != decorative_item_slots.end()) {
-      int j = rand() % 3;
-      switch (j) {
-        case 0:
-          new_item_pool.insert(new_item_pool.begin() + i, crowbar);
-          break;
-        case 1:
-          new_item_pool.insert(new_item_pool.begin() + i, screwdriver);
-          break;
-        case 2:
-          new_item_pool.insert(new_item_pool.begin() + i, wrench);
-          break;
-      }
+      int j = rand() % tools.size();
+      item = tools[j];
+      Console::log("adding tool: %d\n", i);
     } else {
-      RepositoryID& original_item =
-          RepositoryID("00000000-0000-0000-0000-000000000000");
-      default_pool->getIdAt(original_item, i);
-      new_item_pool.insert(
-          new_item_pool.begin() + i,
-          repo.getStablePointer(RepositoryID(original_item.toString())));
+      default_pool->getIdAt(item, i);
+      Console::log("adding %s: %d\n", repo.getItem(item)->string().c_str(), i);
     }
-    for (const auto& id : new_item_pool) item_queue.push(id);
+    item_queue.push(repo.getStablePointer(item));
   }
 }
 
@@ -444,11 +436,10 @@ const RepositoryID* SleepyNPCRandomization::randomize(
   //repo.getStablePointer(RepositoryID("6c3854f6-dbe0-410c-bd01-ddc35b402d0c"));
   //}
   // Cure coin
-  // return
-  // repo.getStablePointer(RepositoryID("6c3854f6-dbe0-410c-bd01-ddc35b402d0c"));
+   return repo.getStablePointer(RepositoryID("6c3854f6-dbe0-410c-bd01-ddc35b402d0c"));
   // Octane booster
-  return repo.getStablePointer(
-      RepositoryID("c82fefa7-febe-46c8-90ec-c945fbef0cb4"));
+  // return repo.getStablePointer(
+  //     RepositoryID("c82fefa7-febe-46c8-90ec-c945fbef0cb4"));
 }
 
 const RepositoryID* ChainReactionNPCRandomization::randomize(
