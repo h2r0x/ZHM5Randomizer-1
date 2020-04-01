@@ -394,22 +394,15 @@ const RepositoryID* UnrestrictedNPCRandomization::randomize(
     return in_out_ID;
   }
 
-  auto shotgun1 = repo.getStablePointer(
-      RepositoryID("0af419f5-e6d3-488d-b133-6ce0964b0770"));
-  auto shotgun2 = repo.getStablePointer(
-      RepositoryID("d5728a0f-fe8d-4e2d-9350-03cf4243c98e"));
-  auto rifle1 = repo.getStablePointer(
-      RepositoryID("6e4afb04-417e-4cfc-aaa2-43f3ecca9037"));
-  auto rifle2 = repo.getStablePointer(
-      RepositoryID("e206ed81-0559-4289-9fec-e6a3e9d4ee7c"));
-  auto sniper = repo.getStablePointer(
-      RepositoryID("370580fc-7fcf-47f8-b994-cebd279f69f9"));
+  auto shotgun = repo.getStablePointer(RepositoryID("901a3b51-51a0-4236-bdf2-23d20696b358"));
+  auto rifle = repo.getStablePointer(RepositoryID("d8aa6eba-0cb7-4ed4-ab99-975f2793d731"));
+  auto sniper = repo.getStablePointer(RepositoryID("43d15bea-d282-4a91-b625-8b7ba85c0ad5"));
 
   int i = rand() % 100;
   if (i >= 0 && i < 40) {
-    return rand() % 2 == 0 ? shotgun1 : shotgun2;
+    return shotgun;
   } else if (i >= 40 && i < 80) {
-    return rand() % 2 == 0 ? rifle1 : rifle2;
+    return rifle;
   } else {
     return sniper;
   }
