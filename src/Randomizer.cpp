@@ -171,6 +171,7 @@ void TreasureHuntWorldInventoryRandomization::initialize(
   std::vector<const RepositoryID*> new_item_pool;
   
   auto gold_idol = RepositoryID("4b0def3b-7378-494d-b885-92c334f2f8cb");
+  auto bust = RepositoryID("a6bcac8b-9772-424e-b2c4-3bdb4da0e349");
   std::vector<int> gold_idol_possible_slots;
   std::vector<int> gold_idol_final_slots;
   default_pool->getPosition(gold_idol_possible_slots,
@@ -185,31 +186,16 @@ void TreasureHuntWorldInventoryRandomization::initialize(
     used_idxes.push_back(idx);
   }
 
-  std::vector<int> decorative_item_slots;
-  default_pool->getPosition(decorative_item_slots,
-                            &Item::isDecorativeMeleeItem);
-
-  const std::vector<RepositoryID> tools({
-      RepositoryID("01ed6d15-e26e-4362-b1a6-363684a7d0fd"),
-      RepositoryID("12cb6b51-a6dd-4bf5-9653-0ab727820cac"),
-      RepositoryID("6adddf7e-6879-4d51-a7e2-6a25ffdca6ae")
-  });
-
   for (int i = 0; i < default_pool->size(); i++) {
     auto& item = RepositoryID("00000000-0000-0000-0000-000000000000");
     if (std::find(gold_idol_final_slots.begin(), gold_idol_final_slots.end(),
                   i) != gold_idol_final_slots.end()) {
-      Console::log("adding gold idol: %d\n", i);
       item = gold_idol;
-    } else if (std::find(decorative_item_slots.begin(),
-                         decorative_item_slots.end(),
-                         i) != decorative_item_slots.end()) {
-      int j = rand() % tools.size();
-      item = tools[j];
-      Console::log("adding tool: %d\n", i);
     } else {
       default_pool->getIdAt(item, i);
-      Console::log("adding %s: %d\n", repo.getItem(item)->string().c_str(), i);
+      if (item == gold_idol) {
+        item = bust;
+      }
     }
     item_queue.push(repo.getStablePointer(item));
   }
