@@ -16,34 +16,33 @@ std::unique_ptr<Randomizer> RandomisationMan::hero_inventory_randomizer =
     nullptr;
 std::unique_ptr<Randomizer> RandomisationMan::stash_item_randomizer = nullptr;
 
-template <typename T>
-RandomisationStrategy* createInstance() {
-  return new T;
-}
+template <typename T> RandomisationStrategy *createInstance(std::shared_ptr<hitman_randomizer::Config> config) { return new T(config); }
 
-std::unordered_map<std::string, RandomisationStrategy* (*)()> worldRandomizers{
+std::unordered_map<std::string, RandomisationStrategy *(*)()> worldRandomizers{
     {"NONE", &createInstance<IdentityRandomisation>},
     {"DEFAULT", &createInstance<WorldInventoryRandomisation>},
     {"OOPS_ALL_EXPLOSIVES",
      &createInstance<OopsAllExplosivesWorldInventoryRandomization>},
     {"TREASURE_HUNT", &createInstance<TreasureHuntWorldInventoryRandomization>},
     {"NO_ITEMS", &createInstance<NoItemsWorldInventoryRandomization>},
+    {"ACTION", &createInstance<ActionWorldRandomization>},
 };
 
-std::unordered_map<std::string, RandomisationStrategy* (*)()> npcRandomizers{
+std::unordered_map<std::string, RandomisationStrategy *(*)()> npcRandomizers{
     {"NONE", &createInstance<IdentityRandomisation>},
     {"DEFAULT", &createInstance<NPCItemRandomisation>},
+    {"UNLIMITED", &createInstance<UnlimitedNPCItemRandomization>},
     {"HARD", &createInstance<UnrestrictedNPCRandomization>},
     {"SLEEPY", &createInstance<SleepyNPCRandomization>},
     {"CHAIN_REACTION", &createInstance<ChainReactionNPCRandomization>},
 };
 
-std::unordered_map<std::string, RandomisationStrategy* (*)()> heroRandomizers{
+std::unordered_map<std::string, RandomisationStrategy *(*)()> heroRandomizers{
     {"NONE", &createInstance<IdentityRandomisation>},
     {"DEFAULT", &createInstance<HeroInventoryRandomisation>},
 };
 
-std::unordered_map<std::string, RandomisationStrategy* (*)()> stashRandomizers{
+std::unordered_map<std::string, RandomisationStrategy *(*)()> stashRandomizers{
     {"NONE", &createInstance<IdentityRandomisation>},
     {"DEFAULT", &createInstance<StashInventoryRandomisation>},
 };
@@ -51,16 +50,16 @@ std::unordered_map<std::string, RandomisationStrategy* (*)()> stashRandomizers{
 void RandomisationMan::configureRandomizerCollection() {
   registerRandomizer(RandomizerSlot::WorldInventory,
                      std::make_unique<Randomizer>(
-                         worldRandomizers[Config::worldInventoryRandomizer]()));
+                         worldRandomizers[Config::worldInventoryRandomizer](config_)));
   registerRandomizer(RandomizerSlot::NPCInventory,
                      std::make_unique<Randomizer>(
-                         npcRandomizers[Config::npcInventoryRandomizer]()));
+                         npcRandomizers[Config::npcInventoryRandomizer](config_)));
   registerRandomizer(RandomizerSlot::HeroInventory,
                      std::make_unique<Randomizer>(
-                         heroRandomizers[Config::heroInventoryRandomizer]()));
+                         heroRandomizers[Config::heroInventoryRandomizer](config_)));
   registerRandomizer(RandomizerSlot::StashInventory,
                      std::make_unique<Randomizer>(
-                         stashRandomizers[Config::stashInventoryRandomizer]()));
+                         stashRandomizers[Config::stashInventoryRandomizer](config_)));
 }
 
 RandomisationMan::RandomisationMan() {
@@ -77,44 +76,45 @@ RandomisationMan::RandomisationMan() {
 
   MemoryUtils::DetourCall(
       GameOffsets::instance()->getPushWorldInventoryDetour(),
-      reinterpret_cast<const void*>(
+      reinterpret_cast<const void *>(
           &pushWorldItem<&world_inventory_randomizer>));
   MemoryUtils::DetourCall(
       GameOffsets::instance()->getPushNPCInventoryDetour(),
-      reinterpret_cast<const void*>(&pushWorldItem<&npc_item_randomizer>));
+      reinterpret_cast<const void *>(&pushWorldItem<&npc_item_randomizer>));
   MemoryUtils::DetourCall(GameOffsets::instance()->getPushHeroInventoryDetour(),
-                          reinterpret_cast<const void*>(
+                          reinterpret_cast<const void *>(
                               &pushWorldItem<&hero_inventory_randomizer>));
   MemoryUtils::DetourCall(
       GameOffsets::instance()->getPushStashInventoryDetour(),
-      reinterpret_cast<const void*>(&pushWorldItem<&stash_item_randomizer>));
+      reinterpret_cast<const void *>(&pushWorldItem<&stash_item_randomizer>));
 }
 
 void RandomisationMan::registerRandomizer(RandomizerSlot slot,
                                           std::unique_ptr<Randomizer> rng) {
   switch (slot) {
-    case RandomizerSlot::WorldInventory:
-      world_inventory_randomizer = std::move(rng);
-      break;
-    case RandomizerSlot::NPCInventory:
-      npc_item_randomizer = std::move(rng);
-      break;
-    case RandomizerSlot::HeroInventory:
-      hero_inventory_randomizer = std::move(rng);
-      break;
-    case RandomizerSlot::StashInventory:
-      stash_item_randomizer = std::move(rng);
-      break;
+  case RandomizerSlot::WorldInventory:
+    world_inventory_randomizer = std::move(rng);
+    break;
+  case RandomizerSlot::NPCInventory:
+    npc_item_randomizer = std::move(rng);
+    break;
+  case RandomizerSlot::HeroInventory:
+    hero_inventory_randomizer = std::move(rng);
+    break;
+  case RandomizerSlot::StashInventory:
+    stash_item_randomizer = std::move(rng);
+    break;
   }
 }
 
-void RandomisationMan::initializeRandomizers(const SSceneInitParameters* sip) {
+void RandomisationMan::initializeRandomizers(const SSceneInitParameters *sip) {
   sip->print();
 
   configureRandomizerCollection();
 
   auto seed = Config::RNGSeed;
-  if (seed == 0) seed = std::random_device{}();
+  if (seed == 0)
+    seed = std::random_device{}();
   RNG::inst().seed(seed);
 
   auto scenario = Scenario::from_SceneInitParams(*sip);

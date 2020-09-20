@@ -4,9 +4,11 @@
 #include <type_traits>
 #include <unordered_map>
 
+// TODO: Remove this?
 #include "..\thirdparty\json.hpp"
 #include "Repository.h"
 #include "Scenario.h"
+#include "Config.h"
 
 class DefaultItemPool;
 
@@ -14,9 +16,11 @@ class RandomisationStrategy {
  protected:
   RandomDrawRepository& repo;
 
-  RandomisationStrategy();
+  std::shared_ptr<hitman_randomizer::Config> config_;
 
  public:
+  RandomisationStrategy(std::shared_ptr<hitman_randomizer::Config> config);
+
   // Takes Repository ID and returns a new ID according to the internal
   // randomisation strategy Item IDs that don't have a corresponding item
   // configuration in the Repository should be skipped.
@@ -70,6 +74,14 @@ class NoItemsWorldInventoryRandomization : public WorldInventoryRandomisation {
                   const DefaultItemPool* const default_pool) override final;
 };
 
+class ActionWorldRandomization : public WorldInventoryRandomisation {
+ public:
+  const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
+  void initialize(Scenario scen,
+                  const DefaultItemPool* const default_pool) override final;
+};
+
+
 class NPCItemRandomisation : public RandomisationStrategy {
  public:
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
@@ -99,6 +111,12 @@ class UnrestrictedNPCRandomization : public RandomisationStrategy {
  public:
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
+
+class UnlimitedNPCItemRandomization : public RandomisationStrategy {
+ public:
+  const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
+};
+
 
 class SleepyNPCRandomization : public RandomisationStrategy {
  public:

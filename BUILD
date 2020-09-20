@@ -1,5 +1,7 @@
 # Bazel rules for ZHM5Randomizer for Hitman 2 (2018).
 
+load("@rules_cc//cc:defs.bzl", "cc_binary")
+
 cc_binary(
     name = "DINPUT8.dll",
     srcs = glob([
@@ -22,4 +24,8 @@ cc_binary(
         "-DEFAULTLIB:advapi32",
     ],
     linkshared = 1,
+    deps = [
+        "//third_party/tomlpp",
+        "@com_google_absl//absl/memory",
+    ],
 )

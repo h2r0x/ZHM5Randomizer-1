@@ -2,19 +2,32 @@
 #include <memory>
 #include <string>
 
-namespace Config {
-extern std::string base_directory;
+namespace hitman_randomizer {
+class Config {
+public:
+  Config() {}
 
-extern std::string worldInventoryRandomizer;
-extern std::string heroInventoryRandomizer;
-extern std::string npcInventoryRandomizer;
-extern std::string stashInventoryRandomizer;
-extern bool randomizeNPCGrenades;
-extern bool showDebugConsole;
-extern bool enableDebugLogging;
-extern bool logToFile;
-extern int RNGSeed;
-extern std::string randomizationScenario;
+  void Load();
 
-void loadConfig();
-};  // namespace Config
+  bool show_debug_console() {
+      return showDebugConsole;
+  }
+
+  bool randomize_npc_grenades() {
+      return randomizeNPCGrenades;
+  }
+
+private:
+  std::string base_directory_;
+  std::string worldInventoryRandomizer;
+  std::string heroInventoryRandomizer;
+  std::string npcInventoryRandomizer;
+  std::string stashInventoryRandomizer;
+  bool randomizeNPCGrenades;
+  bool showDebugConsole;
+  bool enableDebugLogging;
+  bool logToFile;
+  int RNGSeed;
+  std::string randomizationScenario;
+};
+} // namespace hitman_randomizer

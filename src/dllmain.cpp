@@ -8,6 +8,7 @@
 #include "Console.h"
 #include "RandomisationMan.h"
 #include "SceneLoadObserver.h"
+#include "absl/memory/memory.h"
 
 typedef DWORD64(__stdcall *DIRECTINPUT8CREATE)(HINSTANCE, DWORD, REFIID,
                                                LPVOID *, LPUNKNOWN);
@@ -42,19 +43,20 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call,
                       LPVOID lpReserved) {
   switch (ul_reason_for_call) {
     case DLL_PROCESS_ATTACH: {
-      Config::base_directory =
-          std::filesystem::current_path().generic_string();  //..\\HITMAN2
-      Config::loadConfig();
+      auto config = absl::make_shared<hitman_randomizer::Config>();
+      config->Load();
 
-      if (Config::showDebugConsole) Console::spawn();
+      if (config->show_debug_console()) {
+        Console::spawn();
+      }
 
       loadOriginalDInput();
 
-      randomisation_man = std::make_unique<RandomisationMan>();
+      randomisation_man = std::make_unique<RandomisationMan>(config);
       scene_load_observer = std::make_unique<SceneLoadObserver>();
 
-      auto loadConfigCallback = [](const SSceneInitParameters *sip) {
-        Config::loadConfig();
+      auto loadConfigCallback = [config](const SSceneInitParameters *sip) {
+        config->Load();
       };
       scene_load_observer->registerSceneLoadCallback(loadConfigCallback);
 
