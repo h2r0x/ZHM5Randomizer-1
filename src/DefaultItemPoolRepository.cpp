@@ -1,5 +1,6 @@
 #include "DefaultItemPoolRepository.h"
 
+#include <memory>
 #include <fstream>
 
 DefaultItemPoolRepository::DefaultItemPoolRepository(std::string path) {

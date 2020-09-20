@@ -43,7 +43,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call,
                       LPVOID lpReserved) {
   switch (ul_reason_for_call) {
     case DLL_PROCESS_ATTACH: {
-      auto config = absl::make_shared<hitman_randomizer::Config>();
+      auto config = std::make_shared<hitman_randomizer::Config>();
       config->Load();
 
       if (config->show_debug_console()) {

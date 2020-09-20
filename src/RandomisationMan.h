@@ -42,7 +42,7 @@ class RandomisationMan {
   std::shared_ptr<hitman_randomizer::Config> config_;
 
  public:
-  RandomisationMan(std::shared_ptr<hitman_randomizer::Config> config) : config_(config) {}
+  RandomisationMan(std::shared_ptr<hitman_randomizer::Config> config);
 
   void registerRandomizer(RandomizerSlot slot, std::unique_ptr<Randomizer> rng);
   void initializeRandomizers(const SSceneInitParameters* scen);

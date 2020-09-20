@@ -1,4 +1,5 @@
 #pragma once
+
 #include <memory>
 #include <string>
 
@@ -17,12 +18,28 @@ public:
       return randomizeNPCGrenades;
   }
 
+  const std::string& world_inventory_randomizer() const {
+    return world_inventory_randomizer_;
+  };
+  const std::string& hero_inventory_randomizer() const {
+    return hero_inventory_randomizer_;
+  };
+  const std::string& npc_inventory_randomizer() const {
+    return npc_inventory_randomizer_;
+  };
+  const std::string& stash_inventory_randomizer() const {
+    return stash_inventory_randomizer_;
+  };
+  const int rng_seed() const {
+    return RNGSeed;
+  }
+
 private:
   std::string base_directory_;
-  std::string worldInventoryRandomizer;
-  std::string heroInventoryRandomizer;
-  std::string npcInventoryRandomizer;
-  std::string stashInventoryRandomizer;
+  std::string world_inventory_randomizer_;
+  std::string hero_inventory_randomizer_;
+  std::string npc_inventory_randomizer_;
+  std::string stash_inventory_randomizer_;
   bool randomizeNPCGrenades;
   bool showDebugConsole;
   bool enableDebugLogging;

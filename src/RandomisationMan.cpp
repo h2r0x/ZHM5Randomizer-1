@@ -1,6 +1,8 @@
 #include "RandomisationMan.h"
 
 #include <filesystem>
+#include <map>
+#include <memory>
 
 #include "Config.h"
 #include "Console.h"
@@ -16,9 +18,13 @@ std::unique_ptr<Randomizer> RandomisationMan::hero_inventory_randomizer =
     nullptr;
 std::unique_ptr<Randomizer> RandomisationMan::stash_item_randomizer = nullptr;
 
-template <typename T> RandomisationStrategy *createInstance(std::shared_ptr<hitman_randomizer::Config> config) { return new T(config); }
+template <typename T>
+RandomisationStrategy *
+createInstance(std::shared_ptr<hitman_randomizer::Config> config) {
+  return new T(config);
+}
 
-std::unordered_map<std::string, RandomisationStrategy *(*)()> worldRandomizers{
+std::unordered_map<std::string, RandomisationStrategy *(*)(std::shared_ptr<hitman_randomizer::Config>)> worldRandomizers{
     {"NONE", &createInstance<IdentityRandomisation>},
     {"DEFAULT", &createInstance<WorldInventoryRandomisation>},
     {"OOPS_ALL_EXPLOSIVES",
@@ -28,7 +34,7 @@ std::unordered_map<std::string, RandomisationStrategy *(*)()> worldRandomizers{
     {"ACTION", &createInstance<ActionWorldRandomization>},
 };
 
-std::unordered_map<std::string, RandomisationStrategy *(*)()> npcRandomizers{
+std::unordered_map<std::string, RandomisationStrategy *(*)(std::shared_ptr<hitman_randomizer::Config>)> npcRandomizers{
     {"NONE", &createInstance<IdentityRandomisation>},
     {"DEFAULT", &createInstance<NPCItemRandomisation>},
     {"UNLIMITED", &createInstance<UnlimitedNPCItemRandomization>},
@@ -37,42 +43,46 @@ std::unordered_map<std::string, RandomisationStrategy *(*)()> npcRandomizers{
     {"CHAIN_REACTION", &createInstance<ChainReactionNPCRandomization>},
 };
 
-std::unordered_map<std::string, RandomisationStrategy *(*)()> heroRandomizers{
+std::unordered_map<std::string, RandomisationStrategy *(*)(std::shared_ptr<hitman_randomizer::Config>)> heroRandomizers{
     {"NONE", &createInstance<IdentityRandomisation>},
     {"DEFAULT", &createInstance<HeroInventoryRandomisation>},
 };
 
-std::unordered_map<std::string, RandomisationStrategy *(*)()> stashRandomizers{
+std::unordered_map<std::string, RandomisationStrategy *(*)(std::shared_ptr<hitman_randomizer::Config>)> stashRandomizers{
     {"NONE", &createInstance<IdentityRandomisation>},
     {"DEFAULT", &createInstance<StashInventoryRandomisation>},
 };
 
 void RandomisationMan::configureRandomizerCollection() {
-  registerRandomizer(RandomizerSlot::WorldInventory,
-                     std::make_unique<Randomizer>(
-                         worldRandomizers[Config::worldInventoryRandomizer](config_)));
-  registerRandomizer(RandomizerSlot::NPCInventory,
-                     std::make_unique<Randomizer>(
-                         npcRandomizers[Config::npcInventoryRandomizer](config_)));
-  registerRandomizer(RandomizerSlot::HeroInventory,
-                     std::make_unique<Randomizer>(
-                         heroRandomizers[Config::heroInventoryRandomizer](config_)));
-  registerRandomizer(RandomizerSlot::StashInventory,
-                     std::make_unique<Randomizer>(
-                         stashRandomizers[Config::stashInventoryRandomizer](config_)));
+  registerRandomizer(
+      RandomizerSlot::WorldInventory,
+      std::make_unique<Randomizer>(
+          worldRandomizers[config_->world_inventory_randomizer()](config_)));
+  registerRandomizer(
+      RandomizerSlot::NPCInventory,
+      std::make_unique<Randomizer>(
+          npcRandomizers[config_->npc_inventory_randomizer()](config_)));
+  registerRandomizer(
+      RandomizerSlot::HeroInventory,
+      std::make_unique<Randomizer>(
+          heroRandomizers[config_->hero_inventory_randomizer()](config_)));
+  registerRandomizer(
+      RandomizerSlot::StashInventory,
+      std::make_unique<Randomizer>(
+          stashRandomizers[config_->stash_inventory_randomizer()](config_)));
 }
 
-RandomisationMan::RandomisationMan() {
+RandomisationMan::RandomisationMan(std::shared_ptr<hitman_randomizer::Config> config) : config_(config) {
   default_item_pool_repo = std::make_unique<DefaultItemPoolRepository>(
       "..\\HITMAN2\\Retail\\DefaultItemPools.json");
 
   world_inventory_randomizer =
-      std::make_unique<Randomizer>(new IdentityRandomisation);
-  npc_item_randomizer = std::make_unique<Randomizer>(new IdentityRandomisation);
+      std::make_unique<Randomizer>(new IdentityRandomisation(config_));
+  npc_item_randomizer = std::make_unique<Randomizer>(new IdentityRandomisation(config_));
   hero_inventory_randomizer =
-      std::make_unique<Randomizer>(new IdentityRandomisation);
+      std::make_unique<Randomizer>(new IdentityRandomisation(config_));
   stash_item_randomizer =
-      std::make_unique<Randomizer>(new IdentityRandomisation);
+      std::make_unique<Randomizer>(new IdentityRandomisation(config_));
 
   MemoryUtils::DetourCall(
       GameOffsets::instance()->getPushWorldInventoryDetour(),
@@ -112,7 +122,7 @@ void RandomisationMan::initializeRandomizers(const SSceneInitParameters *sip) {
 
   configureRandomizerCollection();
 
-  auto seed = Config::RNGSeed;
+  auto seed = config_->rng_seed();
   if (seed == 0)
     seed = std::random_device{}();
   RNG::inst().seed(seed);
