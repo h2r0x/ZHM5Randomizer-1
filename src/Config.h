@@ -41,10 +41,9 @@ private:
   std::string npc_inventory_randomizer_;
   std::string stash_inventory_randomizer_;
   bool randomizeNPCGrenades;
-  bool showDebugConsole;
-  bool enableDebugLogging;
+  bool showDebugConsole = true;
+  bool enableDebugLogging = true;
   bool logToFile;
   int RNGSeed;
-  std::string randomizationScenario;
 };
 } // namespace hitman_randomizer

@@ -1,31 +1,55 @@
 #include "Config.h"
 
-#include <filesystem>
+#include <Windows.h>
 
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+#include "Console.h"
+#include "spdlog/sinks/basic_file_sink.h"
+#include "spdlog/sinks/stdout_color_sinks.h"
+#include "spdlog/spdlog.h"
 #include "third_party/tomlpp/toml.hpp"
 
 namespace hitman_randomizer {
-
-constexpr auto iniStringBufSize = 32;
-constexpr const char *iniMainCategory = "ZHM5Randomizer";
 
 void Config::Load() {
   base_directory_ =
       std::filesystem::current_path().generic_string(); //..\\HITMAN2
 
   auto ini_path = base_directory_ + "\\Retail\\hitman_randomizer.toml";
-  const auto data = toml::parse(ini_path);
+  toml::table tbl;
+  auto logger = spdlog::get("basic_logger");
+  std::ostringstream writer;
 
-  // LOAD_INI_STRING_ENTRY(worldInventoryRandomizer, iniMainCategory,
-  // "DEFAULT"); LOAD_INI_STRING_ENTRY(heroInventoryRandomizer, iniMainCategory,
-  // "DEFAULT"); LOAD_INI_STRING_ENTRY(npcInventoryRandomizer, iniMainCategory,
-  // "DEFAULT"); LOAD_INI_STRING_ENTRY(stashInventoryRandomizer,
-  // iniMainCategory, "DEFAULT"); LOAD_INI_ENTRY(randomizeNPCGrenades,
-  // iniMainCategory, 0); LOAD_INI_ENTRY(RNGSeed, iniMainCategory, 0);
+  try {
+    std::ifstream t(ini_path);
+    std::stringstream buffer;
+    buffer << t.rdbuf();
+    tbl = toml::parse(buffer.str());
+    writer << "Success reading toml:" << tbl;
+    logger->info(writer.str());
+  } catch (const toml::parse_error &err) {
+    writer << "Failed to load file: " << ini_path << ", err: " << err;
+    logger->info(writer.str());
+    ExitProcess(0);
+  } catch (...) {
+    writer << "Unknown error reading toml";
+    logger->error(writer.str());
+    ExitProcess(0);
+  }
 
-  // LOAD_INI_ENTRY(showDebugConsole, "Debug", 0);
-  // LOAD_INI_ENTRY(enableDebugLogging, "Debug", 0);
-  // LOAD_INI_ENTRY(logToFile, "Debug", 0);
+  world_inventory_randomizer_ =
+      tbl["ZHM5Randomizer"]["worldInventoryRandomizer"].value_or("NONE");
+  hero_inventory_randomizer_ = tbl["ZHM5Randomizer"]["heroInventoryRandomizer"].value_or("NONE");
+  npc_inventory_randomizer_ = tbl["ZHM5Randomizer"]["npcInventoryRandomizer"].value_or("NONE");
+  stash_inventory_randomizer_ =
+      tbl["ZHM5Randomizer"]["stashInventoryRandomizer"].value_or("NONE");
+
+  randomizeNPCGrenades = tbl["ZHM5Randomizer"]["randomizeNPCGrenades"].value_or(false);
+  RNGSeed = tbl["ZHM5Randomizer"]["RNGSeed"].value_or(0);
 }
 
 } // namespace hitman_randomizer

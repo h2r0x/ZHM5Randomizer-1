@@ -1,0 +1,17 @@
+[ZHM5Randomizer]
+# World randomizers: NONE, DEFAULT, OOPS_ALL_EXPLOSIVES
+worldInventoryRandomizer = "DEFAULT"
+
+# Hero randomizers: NONE, DEFAULT
+heroInventoryRandomizer  = "DEFAULT"
+
+# NPC randomizers: NONE, DEFAULT, HARD, SLEEPY, CHAIN_REACTION
+npcInventoryRandomizer   = "DEFAULT"
+
+# Stash randomizers: NONE, DEFAULT
+stashInventoryRandomizer = "DEFAULT"
+
+randomizeNPCGrenades = true
+
+# 0 = no seed, re-randomized at mission start.
+RNGSeed = 0
