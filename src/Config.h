@@ -2,12 +2,24 @@
 
 #include <memory>
 #include <string>
+#include <set>
+
+#include "ZHM5Randomizer/src/Item.h"
 
 namespace hitman_randomizer {
+
+class CustomRules {
+  public:
+  private:
+    std::set<std::string> allowed_words_;
+    std::set<ICON> allowed_categories_;
+    std::set<std::string> ignored_words_;
+    std::set<ICON> ignored_categories_;
+};
+
 class Config {
 public:
-  Config() {}
-
+  Config() : custom_world_rules_(), custom_npc_rules_() {}
   void Load();
 
   bool show_debug_console() {
@@ -46,5 +58,8 @@ private:
   bool logToFile;
   int RNGSeed;
   bool is_loaded_ = false;
+  CustomRules custom_world_rules_;
+  CustomRules custom_npc_rules_;
 };
+
 } // namespace hitman_randomizer

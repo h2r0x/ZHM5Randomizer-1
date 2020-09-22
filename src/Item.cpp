@@ -2,26 +2,6 @@
 
 #include <unordered_map>
 
-std::unordered_map<std::string, ICON> icon_map{
-    {"melee", ICON::MELEE},
-    {"key", ICON::KEY},
-    {"explosives", ICON::EXPLOSIVE},
-    {"questitem", ICON::QUESTITEM},
-    {"tool", ICON::TOOL},
-    {"sniperrifle", ICON::SNIPERRIFLE},
-    {"assaultrifle", ICON::ASSAULTRIFLE},
-    {"remote", ICON::REMOTE},
-    {"QuestItem", ICON::QUESTITEM},
-    {"shotgun", ICON::SHOTGUN},
-    {"suitcase", ICON::SUITCASE},
-    {"pistol", ICON::PISTOL},
-    {"INVALID_CATEGORY_ICON", ICON::INVALID_CATEGORY_ICON},
-    {"distraction", ICON::DISTRACTION},
-    {"poison", ICON::POISON},
-    {"Container", ICON::CONTAINER},
-    {"smg", ICON::SMG},
-};
-
 inline ICON operator|(ICON i, ICON j) {
   using T = std::underlying_type_t<ICON>;
   return static_cast<ICON>(static_cast<T>(i) | static_cast<T>(j));

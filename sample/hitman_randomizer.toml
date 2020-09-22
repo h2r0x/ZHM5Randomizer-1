@@ -6,7 +6,7 @@ worldInventoryRandomizer = "DEFAULT"
 heroInventoryRandomizer  = "DEFAULT"
 
 # NPC randomizers: NONE, DEFAULT, HARD, SLEEPY, CHAIN_REACTION
-npcInventoryRandomizer   = "CHAIN_REACTION"
+npcInventoryRandomizer   = "DEFAULT"
 
 # Stash randomizers: NONE, DEFAULT
 stashInventoryRandomizer = "DEFAULT"
@@ -15,3 +15,19 @@ randomizeNPCGrenades = true
 
 # 0 = no seed, re-randomized at mission start.
 RNGSeed = 0
+
+[Custom]
+
+[Custom.World]
+allowed_words = []
+allowed_categories = []
+ignored_words = []
+ignored_categories = []
+
+[Custom.NPC]
+allowed_words = []
+allowed_categories = []
+ignored_words = []
+ignored_categories = []
+
+
