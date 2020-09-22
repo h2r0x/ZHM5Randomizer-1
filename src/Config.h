@@ -10,7 +10,7 @@ namespace hitman_randomizer {
 
 class CustomRules {
   public:
-  private:
+  // private:
     std::set<std::string> allowed_words_;
     std::set<ICON> allowed_categories_;
     std::set<std::string> ignored_words_;
