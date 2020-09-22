@@ -1,15 +1,17 @@
-#include "RandomisationMan.h"
+#include "ZHM5Randomizer/src/RandomisationMan.h"
 
 #include <filesystem>
 #include <map>
 #include <memory>
 
-#include "Config.h"
-#include "Console.h"
-#include "MemoryUtils.h"
-#include "Offsets.h"
-#include "RNG.h"
-#include "SSceneInitParameters.h"
+#include "ZHM5Randomizer/src/Config.h"
+#include "ZHM5Randomizer/src/Console.h"
+#include "ZHM5Randomizer/src/MemoryUtils.h"
+#include "ZHM5Randomizer/src/Offsets.h"
+#include "ZHM5Randomizer/src/RNG.h"
+#include "ZHM5Randomizer/src/SSceneInitParameters.h"
+#include "ZHM5Randomizer/src/randomizers/Randomizer.h"
+#include "ZHM5Randomizer/src/randomizers/custom.h"
 
 std::unique_ptr<Randomizer> RandomisationMan::world_inventory_randomizer =
     nullptr;
@@ -32,6 +34,7 @@ std::unordered_map<std::string, RandomisationStrategy *(*)(std::shared_ptr<hitma
     {"TREASURE_HUNT", &createInstance<TreasureHuntWorldInventoryRandomization>},
     {"NO_ITEMS", &createInstance<NoItemsWorldInventoryRandomization>},
     {"ACTION", &createInstance<ActionWorldRandomization>},
+    {"CUSTOM", &createInstance<CustomWorldStrategy>},
 };
 
 std::unordered_map<std::string, RandomisationStrategy *(*)(std::shared_ptr<hitman_randomizer::Config>)> npcRandomizers{
@@ -41,6 +44,7 @@ std::unordered_map<std::string, RandomisationStrategy *(*)(std::shared_ptr<hitma
     {"HARD", &createInstance<UnrestrictedNPCRandomization>},
     {"SLEEPY", &createInstance<SleepyNPCRandomization>},
     {"CHAIN_REACTION", &createInstance<ChainReactionNPCRandomization>},
+    {"CUSTOM", &createInstance<CustomNPCStrategy>},
 };
 
 std::unordered_map<std::string, RandomisationStrategy *(*)(std::shared_ptr<hitman_randomizer::Config>)> heroRandomizers{

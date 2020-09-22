@@ -48,6 +48,7 @@ Item::Item(const json& config) {
     common_name = config["CommonName"].get<std::string>();
     throw_type = throw_type_map[config["ThrowType"].get<std::string>()];
     name_LOC_ = config["Name_LOC"].get<std::string>();
+    title_ = config["Title"].get<std::string>();
     isCoin_ = config["IsCoin"].get<bool>();
 
     if (config.find("ActorConfiguration") != config.end()) {

@@ -28,8 +28,9 @@ void CustomWorldStrategy::initialize(
   unsigned int random_item_count = default_item_pool_size -
                                    new_item_pool.size();
 
-  repo.getRandom(new_item_pool, random_item_count,
-                 [](Item it) { return it.isExplosive(); });
+  repo.getRandom(new_item_pool, random_item_count, [this](Item it) {
+      return config_->custom_world_rules_.ShouldPermit(it);
+  });
 
   // Shuffle item pool
   std::shuffle(new_item_pool.begin(), new_item_pool.end(),
@@ -67,6 +68,8 @@ const RepositoryID* CustomNPCStrategy::randomize(
     return in_out_ID;
   }
 
-  auto randomized_item = repo.getRandom(&Item::isWeapon);
+  auto randomized_item = repo.getRandom([this](Item it) {
+      return config_->custom_npc_rules_.ShouldPermit(it);
+  });
   return randomized_item;  
 }

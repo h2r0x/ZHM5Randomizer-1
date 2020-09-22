@@ -51,7 +51,6 @@ enum class SILENCE_RATING {
   SUPER_SILENCED,
 };
 
-
 class Item {
   ICON icon;
   CHEAT_GROUP cheat_group;
@@ -59,6 +58,7 @@ class Item {
   SILENCE_RATING silence_rating;
 
   std::string common_name;
+  std::string title_;
   std::string name_LOC_;
   bool isCoin_;
 
@@ -89,6 +89,20 @@ public:
     return (!isWeapon()) && name_LOC().rfind("ui_prop_melee", 0) == 0;
   }
 
+  const std::string IconString() const {
+    std::string icon_name;
+    for (const auto &i : icon_map) {
+      if (i.second == getType()) {
+        return i.first;
+        break;
+      }
+    }
+    return "THIS_SHOULD_NEVER_HAPPEN";
+  }
+
+  const std::string& title() const {
+    return title_;
+  }
   const std::string &string() const;
   const std::string &name_LOC() const { return name_LOC_; }
   const ICON &getType() const;
@@ -98,23 +112,22 @@ public:
   void print() const;
 
   std::unordered_map<std::string, ICON> icon_map{
-    {"melee", ICON::MELEE},
-    {"key", ICON::KEY},
-    {"explosives", ICON::EXPLOSIVE},
-    {"questitem", ICON::QUESTITEM},
-    {"tool", ICON::TOOL},
-    {"sniperrifle", ICON::SNIPERRIFLE},
-    {"assaultrifle", ICON::ASSAULTRIFLE},
-    {"remote", ICON::REMOTE},
-    {"QuestItem", ICON::QUESTITEM},
-    {"shotgun", ICON::SHOTGUN},
-    {"suitcase", ICON::SUITCASE},
-    {"pistol", ICON::PISTOL},
-    {"INVALID_CATEGORY_ICON", ICON::INVALID_CATEGORY_ICON},
-    {"distraction", ICON::DISTRACTION},
-    {"poison", ICON::POISON},
-    {"Container", ICON::CONTAINER},
-    {"smg", ICON::SMG},
-};
-
+      {"melee", ICON::MELEE},
+      {"key", ICON::KEY},
+      {"explosives", ICON::EXPLOSIVE},
+      {"questitem", ICON::QUESTITEM},
+      {"tool", ICON::TOOL},
+      {"sniperrifle", ICON::SNIPERRIFLE},
+      {"assaultrifle", ICON::ASSAULTRIFLE},
+      {"remote", ICON::REMOTE},
+      {"QuestItem", ICON::QUESTITEM},
+      {"shotgun", ICON::SHOTGUN},
+      {"suitcase", ICON::SUITCASE},
+      {"pistol", ICON::PISTOL},
+      {"INVALID_CATEGORY_ICON", ICON::INVALID_CATEGORY_ICON},
+      {"distraction", ICON::DISTRACTION},
+      {"poison", ICON::POISON},
+      {"Container", ICON::CONTAINER},
+      {"smg", ICON::SMG},
+  };
 };

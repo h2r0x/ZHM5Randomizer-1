@@ -156,7 +156,8 @@ void Config::Load() {
     }
   }
 
-  logger->info("Result: {}", custom_npc_rules_.ToString());
+  logger->info("NPCS: {}", custom_npc_rules_.ToString());
+  logger->info("WORLD: {}", custom_world_rules_.ToString());
 }
 
 } // namespace hitman_randomizer
