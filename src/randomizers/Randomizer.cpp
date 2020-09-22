@@ -3,13 +3,13 @@
 
 #include <random>
 
-#include "Config.h"
-#include "Console.h"
-#include "DefaultItemPool.h"
-#include "Item.h"
-#include "Offsets.h"
-#include "RNG.h"
-#include "Repository.h"
+#include "ZHM5Randomizer/src/Config.h"
+#include "ZHM5Randomizer/src/Console.h"
+#include "ZHM5Randomizer/src/DefaultItemPool.h"
+#include "ZHM5Randomizer/src/Item.h"
+#include "ZHM5Randomizer/src/Offsets.h"
+#include "ZHM5Randomizer/src/RNG.h"
+#include "ZHM5Randomizer/src/Repository.h"
 
 RandomisationStrategy::RandomisationStrategy(std::shared_ptr<hitman_randomizer::Config> config)
     : repo(RandomDrawRepository::inst()), config_(config) {}
@@ -531,11 +531,11 @@ const RepositoryID* ChainReactionNPCRandomization::randomize(
         RepositoryID("c82fefa7-febe-46c8-90ec-c945fbef0cb4"));
 
   int i = rand() % 10;
-  if (i >= 0 && i < 3) {
+  if (i >= 0 && i < 4) {
     // Cure coin
     return repo.getStablePointer(
         RepositoryID("6c3854f6-dbe0-410c-bd01-ddc35b402d0c"));
-  } else if (i >= 3 && i < 6) {
+  } else if (i >= 4 && i < 8) {
     // Octane booster
     return repo.getStablePointer(
         RepositoryID("c82fefa7-febe-46c8-90ec-c945fbef0cb4"));

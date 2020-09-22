@@ -45,5 +45,6 @@ private:
   bool enableDebugLogging = true;
   bool logToFile;
   int RNGSeed;
+  bool is_loaded_ = false;
 };
 } // namespace hitman_randomizer

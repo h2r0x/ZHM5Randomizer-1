@@ -9,7 +9,10 @@ cc_binary(
         "**/*.h",
         "**/*.hpp",
     ]),
-    copts = ["/DCOMPILING_DLL"],
+    copts = [
+        "/DCOMPILING_DLL",
+        "-Ithird_party",
+    ],
     linkopts = [
         "-DEFAULTLIB:user32",
         "-DEFAULTLIB:kernel32",

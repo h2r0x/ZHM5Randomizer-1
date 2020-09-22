@@ -16,13 +16,19 @@
 namespace hitman_randomizer {
 
 void Config::Load() {
+  auto logger = spdlog::get("basic_logger");
+  std::ostringstream writer;
+
+  if (is_loaded_) {
+    logger->warn("Asking to reload config, ignoring.");
+    return;
+  }
+
   base_directory_ =
       std::filesystem::current_path().generic_string(); //..\\HITMAN2
 
   auto ini_path = base_directory_ + "\\Retail\\hitman_randomizer.toml";
   toml::table tbl;
-  auto logger = spdlog::get("basic_logger");
-  std::ostringstream writer;
 
   try {
     std::ifstream t(ini_path);
@@ -50,6 +56,7 @@ void Config::Load() {
 
   randomizeNPCGrenades = tbl["ZHM5Randomizer"]["randomizeNPCGrenades"].value_or(false);
   RNGSeed = tbl["ZHM5Randomizer"]["RNGSeed"].value_or(0);
+  is_loaded_ = true;
 }
 
 } // namespace hitman_randomizer

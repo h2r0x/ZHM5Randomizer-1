@@ -4,11 +4,9 @@
 #include <type_traits>
 #include <unordered_map>
 
-// TODO: Remove this?
-#include "..\thirdparty\json.hpp"
-#include "Repository.h"
-#include "Scenario.h"
-#include "Config.h"
+#include "ZHM5Randomizer/src/Repository.h"
+#include "ZHM5Randomizer/src/Scenario.h"
+#include "ZHM5Randomizer/src/Config.h"
 
 class DefaultItemPool;
 

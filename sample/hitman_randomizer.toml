@@ -6,7 +6,7 @@ worldInventoryRandomizer = "DEFAULT"
 heroInventoryRandomizer  = "DEFAULT"
 
 # NPC randomizers: NONE, DEFAULT, HARD, SLEEPY, CHAIN_REACTION
-npcInventoryRandomizer   = "DEFAULT"
+npcInventoryRandomizer   = "CHAIN_REACTION"
 
 # Stash randomizers: NONE, DEFAULT
 stashInventoryRandomizer = "DEFAULT"

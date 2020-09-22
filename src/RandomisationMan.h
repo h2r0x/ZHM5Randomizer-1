@@ -1,7 +1,7 @@
 #pragma once
 #include "DefaultItemPoolRepository.h"
 #include "Offsets.h"
-#include "Randomizer.h"
+#include "ZHM5Randomizer/src/randomizers/Randomizer.h"
 #include "Scenario.h"
 
 using tPushItem = __int64(__fastcall*)(__int64*, const RepositoryID*, __int64,
