@@ -3,6 +3,8 @@
 #include <memory>
 #include <string>
 #include <set>
+#include <sstream>
+#include <ostream>
 
 #include "ZHM5Randomizer/src/Item.h"
 
@@ -12,9 +14,27 @@ class CustomRules {
   public:
   // private:
     std::set<std::string> allowed_words_;
-    std::set<ICON> allowed_categories_;
+    std::set<std::string> allowed_categories_;
     std::set<std::string> ignored_words_;
-    std::set<ICON> ignored_categories_;
+    std::set<std::string> ignored_categories_;
+
+    const std::string ToString() const {
+      std::stringstream fmt;
+      fmt << "+Words[";
+      std::copy(allowed_words_.begin(), allowed_words_.end(), std::ostream_iterator<std::string>(fmt, " "));
+      fmt << "]\n";
+      fmt << "+Categories[";
+      std::copy(allowed_categories_.begin(), allowed_categories_.end(), std::ostream_iterator<std::string>(fmt, " "));
+      fmt << "]\n";
+      fmt << "-Words[";
+      std::copy(ignored_words_.begin(), ignored_words_.end(), std::ostream_iterator<std::string>(fmt, " "));
+      fmt << "]\n";
+      fmt << "-Categories[";
+      std::copy(allowed_categories_.begin(), allowed_categories_.end(), std::ostream_iterator<std::string>(fmt, " "));
+      fmt << "]\n";
+
+      return fmt.str();
+    }
 };
 
 class Config {

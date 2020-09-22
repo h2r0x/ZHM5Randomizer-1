@@ -80,8 +80,9 @@ void Config::Load() {
     for (toml::node &elem : *arr) {
       elem.visit([this](auto &&el) noexcept {
         if constexpr (toml::is_string<decltype(el)>) {
-          this->custom_world_rules_.allowed_categories_.insert(
-              Item::icon_map[el.get()]);
+          if (el != "") {
+            this->custom_world_rules_.allowed_categories_.insert(*el);
+          }
         }
       });
     }
@@ -101,8 +102,9 @@ void Config::Load() {
     for (toml::node &elem : *arr) {
       elem.visit([this](auto &&el) noexcept {
         if constexpr (toml::is_string<decltype(el)>) {
-          this->custom_world_rules_.ignored_categories_.insert(
-              Item::icon_map[el.get()]);
+          if (el != "") {
+            this->custom_world_rules_.ignored_categories_.insert(*el);
+          }
         }
       });
     }
@@ -114,7 +116,7 @@ void Config::Load() {
       elem.visit([this](auto &&el) noexcept {
         if constexpr (toml::is_string<decltype(el)>) {
           if (el != "") {
-            this->custom_world_rules_.allowed_words_.insert(*el);
+            this->custom_npc_rules_.allowed_words_.insert(*el);
           }
         }
       });
@@ -124,8 +126,9 @@ void Config::Load() {
     for (toml::node &elem : *arr) {
       elem.visit([this](auto &&el) noexcept {
         if constexpr (toml::is_string<decltype(el)>) {
-          this->custom_npc_rules_.allowed_categories_.insert(
-              Item::icon_map[el.get()]);
+          if (el != "") {
+            this->custom_npc_rules_.allowed_categories_.insert(*el);
+          }
         }
       });
     }
@@ -135,7 +138,7 @@ void Config::Load() {
       elem.visit([this](auto &&el) noexcept {
         if constexpr (toml::is_string<decltype(el)>) {
           if (el != "") {
-            this->custom_world_rules_.ignored_words_.insert(*el);
+            this->custom_npc_rules_.ignored_words_.insert(*el);
           }
         }
       });
@@ -145,12 +148,15 @@ void Config::Load() {
     for (toml::node &elem : *arr) {
       elem.visit([this](auto &&el) noexcept {
         if constexpr (toml::is_string<decltype(el)>) {
-          this->custom_npc_rules_.ignored_categories_.insert(
-              Item::icon_map[el.get()]);
+          if (el != "") {
+            this->custom_npc_rules_.ignored_categories_.insert(*el);
+          }
         }
       });
     }
   }
+
+  logger->info("Result: {}", custom_npc_rules_.ToString());
 }
 
 } // namespace hitman_randomizer
