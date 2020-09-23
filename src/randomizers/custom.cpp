@@ -49,9 +49,9 @@ void CustomWorldStrategy::initialize(
           new_item_pool.begin() + i,
           repo.getStablePointer(RepositoryID(original_item.toString())));
     } else {
-      new_item_pool.insert(
-          new_item_pool.begin() + i,
-          *select_randomly(item_pool.begin(), item_pool.end()));
+      auto result = *select_randomly(item_pool.begin(), item_pool.end());
+      new_item_pool.insert(new_item_pool.begin() + i,
+      repo.getStablePointer(RepositoryID(result->toString())));
     }
   }
 
