@@ -20,36 +20,45 @@ CustomWorldStrategy::randomize(const RepositoryID *in_out_ID) {
 
 void CustomWorldStrategy::initialize(
     Scenario scen, const DefaultItemPool *const default_pool) {
-  std::vector<const RepositoryID *> test_pool;
-  repo.getRandom(test_pool, 1, [this](Item it) {
-    return config_->custom_npc_rules_.ShouldPermit(it);
+  spdlog::get("console")->info("CustomWorldStrategy::initialize");
+  std::vector<RepositoryID*> item_pool;
+
+  default_pool->getL(item_pool, [this](Item it) {
+    return config_->custom_world_rules_.ShouldPermit(it);
   });
-  if (test_pool.size() == 0) {
+  if (item_pool.size() == 0) {
     spdlog::get("console")->error(
-        "CustomWorldStrategy::initialize: could not find any matching items. "
-        "Game will probably crash.");
+        "CustomNPCStrategy::randomize: could not find any matching items. Game "
+        "will probably crash.");
   }
 
   // Key and quest items
-  std::vector<const RepositoryID *> new_item_pool;
-  default_pool->get(new_item_pool, &Item::isEssential);
+  std::vector<int> essential_items;
+  default_pool->getPosition(essential_items, &Item::isEssential);
 
-  int default_item_pool_size = default_pool->size();
-  unsigned int random_item_count =
-      default_item_pool_size - new_item_pool.size();
+  const unsigned int default_item_pool_size = default_pool->size();
 
-  repo.getRandom(new_item_pool, random_item_count, [this](Item it) {
-    return config_->custom_world_rules_.ShouldPermit(it);
-  });
+  std::vector<const RepositoryID*> new_item_pool;
 
-  // Shuffle item pool
-  std::shuffle(new_item_pool.begin(), new_item_pool.end(),
-               *RNG::inst().getEngine());
+  for (int i = 0; i < default_item_pool_size; i++) {
+    if (std::find(essential_items.begin(), essential_items.end(), i) != essential_items.end()) {
+      RepositoryID &original_item =
+          RepositoryID("00000000-0000-0000-0000-000000000000");
+      default_pool->getIdAt(original_item, i);
+      new_item_pool.insert(
+          new_item_pool.begin() + i,
+          repo.getStablePointer(RepositoryID(original_item.toString())));
+    } else {
+      new_item_pool.insert(
+          new_item_pool.begin() + i,
+          *select_randomly(item_pool.begin(), item_pool.end()));
+    }
+  }
 
   //   std::vector<int> weapon_slots;
   //   default_pool->getPosition(weapon_slots, &Item::isWeapon);
   //   for (int i = 0; i < weapon_slots.size(); i++) {
-  //     new_item_pool.insert(new_item_pool.begin() + weapon_slots[i],
+  //     quest_item_pool.insert(quest_item_pool.begin() + weapon_slots[i],
   //     weapons[i]);
   //   }
 
@@ -60,7 +69,9 @@ void CustomWorldStrategy::initialize(
 }
 
 void CustomNPCStrategy::initialize(Scenario scen,
-                                   const DefaultItemPool* const default_pool) {
+                                   const DefaultItemPool *const default_pool) {
+  spdlog::get("console")->info("CustomNPCStrategy::initialize");
+
   default_pool->getL(item_pool_, [this](Item it) {
     return config_->custom_npc_rules_.ShouldPermit(it);
   });
@@ -75,6 +86,7 @@ void CustomNPCStrategy::initialize(Scenario scen,
 
 const RepositoryID *
 CustomNPCStrategy::randomize(const RepositoryID *in_out_ID) {
+  spdlog::get("console")->info("CustomNPCStrategy::randomize");
   if (!repo.contains(*in_out_ID)) {
     spdlog::get("console")->info(
         "CustomNPCStrategy::randomize: skipped (not in repo) [{}]",
