@@ -28,7 +28,7 @@ void CustomWorldStrategy::initialize(
   });
   if (item_pool.size() == 0) {
     spdlog::get("console")->error(
-        "CustomNPCStrategy::randomize: could not find any matching items. Game "
+        "CustomWorldStrategy::randomize: could not find any matching items. Game "
         "will probably crash.");
   }
 
@@ -55,17 +55,10 @@ void CustomWorldStrategy::initialize(
     }
   }
 
-  //   std::vector<int> weapon_slots;
-  //   default_pool->getPosition(weapon_slots, &Item::isWeapon);
-  //   for (int i = 0; i < weapon_slots.size(); i++) {
-  //     quest_item_pool.insert(quest_item_pool.begin() + weapon_slots[i],
-  //     weapons[i]);
-  //   }
-
-  // fill queue
   for (const auto &id : new_item_pool) {
     item_queue.push(id);
   }
+  spdlog::get("console")->info("CustomWorldStrategy::initialize complete with {} items.", item_pool.size());
 }
 
 void CustomNPCStrategy::initialize(Scenario scen,
@@ -81,7 +74,7 @@ void CustomNPCStrategy::initialize(Scenario scen,
         "will probably crash.");
   }
 
-  return;
+  spdlog::get("console")->info("CustomNPCStrategy::initialize complete with {} items.", item_pool_.size());
 }
 
 const RepositoryID *
@@ -102,6 +95,7 @@ CustomNPCStrategy::randomize(const RepositoryID *in_out_ID) {
         repo.getItem(*in_out_ID)->string());
     return in_out_ID;
   }
-
-  return *select_randomly(item_pool_.begin(), item_pool_.end());
+  auto result = *select_randomly(item_pool_.begin(), item_pool_.end());
+  spdlog::get("console")->info("CustomNPCStrategy::randomize complete.");
+  return result;
 }

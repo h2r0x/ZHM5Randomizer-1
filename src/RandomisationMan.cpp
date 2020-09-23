@@ -12,6 +12,7 @@
 #include "ZHM5Randomizer/src/SSceneInitParameters.h"
 #include "ZHM5Randomizer/src/randomizers/Randomizer.h"
 #include "ZHM5Randomizer/src/randomizers/custom.h"
+#include "spdlog/spdlog.h"
 
 std::unique_ptr<Randomizer> RandomisationMan::world_inventory_randomizer =
     nullptr;
@@ -122,6 +123,8 @@ void RandomisationMan::registerRandomizer(RandomizerSlot slot,
 }
 
 void RandomisationMan::initializeRandomizers(const SSceneInitParameters *sip) {
+  auto logger = spdlog::get("console");
+  logger->info("RandomisationMan::initializeRandomizers");
   sip->print();
 
   configureRandomizerCollection();
@@ -132,7 +135,7 @@ void RandomisationMan::initializeRandomizers(const SSceneInitParameters *sip) {
   RNG::inst().seed(seed);
 
   auto scenario = Scenario::from_SceneInitParams(*sip);
-  Console::log("Loading Scenario: %s\n", scenario.string().c_str());
+  logger->info("Loading Scenario: {}", scenario.string());
 
   auto default_pool = default_item_pool_repo->getDefaultPool(scenario);
   if (default_pool != nullptr) {
@@ -146,4 +149,5 @@ void RandomisationMan::initializeRandomizers(const SSceneInitParameters *sip) {
     hero_inventory_randomizer->disable();
     stash_item_randomizer->disable();
   }
+  logger->info("RandomisationMan::initializeRandomizers complete.");
 }

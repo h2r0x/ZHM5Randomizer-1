@@ -7,6 +7,7 @@
 #include <string>
 
 #include "ZHM5Randomizer/src/Item.h"
+#include "spdlog/spdlog.h"
 
 namespace hitman_randomizer {
 
@@ -46,28 +47,55 @@ public:
       return true;
     }
 
-    bool permitted = true;
+    bool matches_allowed_word = false;
+    bool matches_allowed_category = false;
+    bool matches_ignored_word = false;
+    bool matches_ignored_category = false;
+
+    if (allowed_categories_.empty()) {
+      matches_allowed_category = true;
+    }
     for (auto &category : allowed_categories_) {
-      if (it.IconString() != category) {
-        permitted = false;
+      if (it.IconString() == category) {
+        matches_allowed_category = true;
       }
     }
     for (auto &category : ignored_categories_) {
       if (it.IconString() == category) {
-        permitted = false;
+        matches_ignored_category = true;
       }
+    }
+    if (allowed_words_.empty()) {
+      matches_allowed_word = true;
     }
     for (auto &word : allowed_words_) {
       if (it.title().find(word) == std::string::npos) {
-        permitted = false;
+        matches_allowed_word = true;
       }
     }
     for (auto &word : ignored_words_) {
       if (it.title().find(word) != std::string::npos) {
-        permitted = false;
+        matches_ignored_word = true;
       }
     }
-    return permitted;
+
+    if ((matches_ignored_word || matches_ignored_category) &&
+        (matches_allowed_word || matches_ignored_category)) {
+      spdlog::get("console")->error(
+          "The item {} is both allowed and ignored. This is probably bad.",
+          it.title());
+    }
+
+    if (matches_ignored_category || matches_ignored_word) {
+      return false;
+    }
+
+    if ((allowed_words_.empty() || matches_allowed_word) &&
+        (allowed_categories_.empty() || matches_allowed_category)) {
+      return true;
+    }
+
+    return false;
   }
 };
 
