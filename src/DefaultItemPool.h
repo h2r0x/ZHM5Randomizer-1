@@ -13,20 +13,23 @@ class Item;
 // item pools are nessecary for the generation of suitable randomized item
 // pools.
 class DefaultItemPool {
- private:
+private:
   std::vector<RepositoryID> ids;
 
- public:
-  DefaultItemPool(json& json);
+public:
+  DefaultItemPool(json &json);
 
   size_t size() const;
 
-  void get(std::vector<const RepositoryID*>& out,
+  void get(std::vector<const RepositoryID *> &out,
            bool (Item::*fn)() const) const;
-  void getPosition(std::vector<int>& out, bool (Item::*fn)() const) const;
+  void DefaultItemPool::getL(std::vector<RepositoryID *> &out,
+                            std::function<bool(const Item &)> fn) const;
+
+  void getPosition(std::vector<int> &out, bool (Item::*fn)() const) const;
   size_t getCount(bool (Item::*fn)() const) const;
-  size_t getCount(const RepositoryID&) const;
-  void DefaultItemPool::getIdAt(RepositoryID& repoId, int position) const;
+  size_t getCount(const RepositoryID &) const;
+  void DefaultItemPool::getIdAt(RepositoryID &repoId, int position) const;
 
   void print() const;
 };

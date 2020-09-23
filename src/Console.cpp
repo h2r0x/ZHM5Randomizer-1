@@ -25,7 +25,7 @@ void Console::spawn() {
   auto log_path = base_directory_ + "\\Retail\\ZHM5Randomizer.log";
 
   try {
-    auto logger = spdlog::basic_logger_mt("basic_logger", log_path);
+  auto logger = spdlog::basic_logger_mt("console", log_path, true);
   logger->flush_on(spdlog::level::debug);
   logger->set_level(spdlog::level::debug);
   logger->info("Console::spawn()");

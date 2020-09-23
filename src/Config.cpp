@@ -17,11 +17,10 @@
 namespace hitman_randomizer {
 
 void Config::Load() {
-  auto logger = spdlog::get("basic_logger");
+  auto logger = spdlog::get("console");
   std::ostringstream writer;
 
   if (is_loaded_) {
-    logger->warn("Asking to reload config, ignoring.");
     return;
   }
 

@@ -6,7 +6,6 @@
 #include <sstream>
 #include <string>
 
-
 #include "ZHM5Randomizer/src/Item.h"
 
 namespace hitman_randomizer {
@@ -41,28 +40,34 @@ public:
     return fmt.str();
   }
 
-  const bool ShouldPermit(Item& it) const {
-    for (auto &word : ignored_words_) {
-      if (it.title().find(word) != std::string::npos) {
-        return false;
+  const bool ShouldPermit(const Item &it) const {
+    if (allowed_categories_.size() == 0 && ignored_categories_.size() == 0 &&
+        allowed_words_.size() == 0 && allowed_categories_.size() == 0) {
+      return true;
+    }
+
+    bool permitted = true;
+    for (auto &category : allowed_categories_) {
+      if (it.IconString() != category) {
+        permitted = false;
       }
     }
     for (auto &category : ignored_categories_) {
       if (it.IconString() == category) {
-        return false;
+        permitted = false;
       }
     }
     for (auto &word : allowed_words_) {
       if (it.title().find(word) == std::string::npos) {
-        return false;
+        permitted = false;
       }
     }
-    for (auto &category : ignored_categories_) {
-      if (it.IconString() != category) {
-        return false;
+    for (auto &word : ignored_words_) {
+      if (it.title().find(word) != std::string::npos) {
+        permitted = false;
       }
     }
-    return true;
+    return permitted;
   }
 };
 
