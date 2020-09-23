@@ -42,6 +42,10 @@ public:
   }
 
   const bool ShouldPermit(const Item &it) const {
+    if (it.title() == "") {
+      return false;
+    }
+    
     if (allowed_categories_.size() == 0 && ignored_categories_.size() == 0 &&
         allowed_words_.size() == 0 && allowed_categories_.size() == 0) {
       return true;

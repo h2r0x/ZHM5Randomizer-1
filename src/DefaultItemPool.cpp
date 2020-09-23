@@ -24,12 +24,12 @@ void DefaultItemPool::get(std::vector<const RepositoryID *> &out,
   }
 }
 
-void DefaultItemPool::getL(std::vector<RepositoryID*> &out,
+void DefaultItemPool::getL(std::vector<const RepositoryID*> &out,
                           std::function<bool(const Item&)> fn) const {
   auto repo = RandomDrawRepository::inst();
-  for (const auto id : ids) {
+  for (const auto &id : ids) {
     if (fn(*(repo.getItem(id)))) {
-      out.push_back(&RepositoryID(id));
+      out.push_back(&id);
     }
   }
 }

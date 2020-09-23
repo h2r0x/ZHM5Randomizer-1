@@ -42,5 +42,5 @@ public:
                   const DefaultItemPool *const default_pool) override final;
 
 private:
-  std::vector<RepositoryID*> item_pool_;
+  std::vector<const RepositoryID*> item_pool_;
 };

@@ -21,7 +21,8 @@ CustomWorldStrategy::randomize(const RepositoryID *in_out_ID) {
 void CustomWorldStrategy::initialize(
     Scenario scen, const DefaultItemPool *const default_pool) {
   spdlog::get("console")->info("CustomWorldStrategy::initialize");
-  std::vector<RepositoryID*> item_pool;
+  int default_item_pool_size = default_pool->size();
+  std::vector<const RepositoryID*> item_pool;
 
   default_pool->getL(item_pool, [this](Item it) {
     return config_->custom_world_rules_.ShouldPermit(it);
@@ -36,28 +37,19 @@ void CustomWorldStrategy::initialize(
   std::vector<int> essential_items;
   default_pool->getPosition(essential_items, &Item::isEssential);
 
-  const unsigned int default_item_pool_size = default_pool->size();
-
   std::vector<const RepositoryID*> new_item_pool;
 
   for (int i = 0; i < default_item_pool_size; i++) {
     if (std::find(essential_items.begin(), essential_items.end(), i) != essential_items.end()) {
-      RepositoryID &original_item =
-          RepositoryID("00000000-0000-0000-0000-000000000000");
+      RepositoryID& original_item = RepositoryID("00000000-0000-0000-0000-000000000000");
       default_pool->getIdAt(original_item, i);
-      new_item_pool.insert(
-          new_item_pool.begin() + i,
-          repo.getStablePointer(RepositoryID(original_item.toString())));
+      item_queue.push(repo.getStablePointer(RepositoryID(original_item.toString())));
     } else {
       auto result = *select_randomly(item_pool.begin(), item_pool.end());
-      new_item_pool.insert(new_item_pool.begin() + i,
-      repo.getStablePointer(RepositoryID(result->toString())));
+      item_queue.push(repo.getStablePointer(RepositoryID(result->toString())));
     }
   }
 
-  for (const auto &id : new_item_pool) {
-    item_queue.push(id);
-  }
   spdlog::get("console")->info("CustomWorldStrategy::initialize complete with {} items.", item_pool.size());
 }
 

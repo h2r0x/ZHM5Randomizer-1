@@ -125,7 +125,12 @@ void RandomisationMan::registerRandomizer(RandomizerSlot slot,
 void RandomisationMan::initializeRandomizers(const SSceneInitParameters *sip) {
   auto logger = spdlog::get("console");
   logger->info("RandomisationMan::initializeRandomizers");
-  sip->print();
+  auto scenario = Scenario::from_SceneInitParams(*sip);
+  if (scenario.string() == "NONE") {
+    return;
+  }
+  
+  logger->info("Loading Scenario: {}", scenario.string());
 
   configureRandomizerCollection();
 
@@ -133,9 +138,6 @@ void RandomisationMan::initializeRandomizers(const SSceneInitParameters *sip) {
   if (seed == 0)
     seed = std::random_device{}();
   RNG::inst().seed(seed);
-
-  auto scenario = Scenario::from_SceneInitParams(*sip);
-  logger->info("Loading Scenario: {}", scenario.string());
 
   auto default_pool = default_item_pool_repo->getDefaultPool(scenario);
   if (default_pool != nullptr) {
