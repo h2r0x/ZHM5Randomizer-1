@@ -1,8 +1,9 @@
 #include "ZHM5Randomizer/src/randomizers/custom.h"
 
 #include <algorithm>
-
 #include <random>
+
+#include "spdlog/spdlog.h"
 
 #include "ZHM5Randomizer/src/Config.h"
 #include "ZHM5Randomizer/src/Console.h"
@@ -11,7 +12,7 @@
 #include "ZHM5Randomizer/src/Offsets.h"
 #include "ZHM5Randomizer/src/RNG.h"
 #include "ZHM5Randomizer/src/Repository.h"
-#include "spdlog/spdlog.h"
+
 
 const RepositoryID *
 CustomWorldStrategy::randomize(const RepositoryID *in_out_ID) {
@@ -20,17 +21,15 @@ CustomWorldStrategy::randomize(const RepositoryID *in_out_ID) {
 
 void CustomWorldStrategy::initialize(
     Scenario scen, const DefaultItemPool *const default_pool) {
-  spdlog::get("console")->info("CustomWorldStrategy::initialize");
   int default_item_pool_size = default_pool->size();
   std::vector<const RepositoryID*> item_pool;
 
-  default_pool->getL(item_pool, [this](Item it) {
+  repo.AllMatches(item_pool, default_pool->size(), [this](Item it) {
     return config_->custom_world_rules_.ShouldPermit(it);
   });
+
   if (item_pool.size() == 0) {
-    spdlog::get("console")->error(
-        "CustomWorldStrategy::randomize: could not find any matching items. Game "
-        "will probably crash.");
+    spdlog::get("console")->error("CustomWorldStrategy::randomize: could not find any matching items. Game will probably crash.");
   }
 
   // Key and quest items
@@ -55,15 +54,11 @@ void CustomWorldStrategy::initialize(
 
 void CustomNPCStrategy::initialize(Scenario scen,
                                    const DefaultItemPool *const default_pool) {
-  spdlog::get("console")->info("CustomNPCStrategy::initialize");
-
-  default_pool->getL(item_pool_, [this](Item it) {
+  repo.AllMatches(item_pool_, default_pool->size(), [this](Item it) {
     return config_->custom_npc_rules_.ShouldPermit(it);
   });
   if (item_pool_.size() == 0) {
-    spdlog::get("console")->error(
-        "CustomNPCStrategy::randomize: could not find any matching items. Game "
-        "will probably crash.");
+    spdlog::get("console")->error("CustomNPCStrategy::randomize: could not find any matching items. Game will probably crash.");
   }
 
   spdlog::get("console")->info("CustomNPCStrategy::initialize complete with {} items.", item_pool_.size());
@@ -71,20 +66,15 @@ void CustomNPCStrategy::initialize(Scenario scen,
 
 const RepositoryID *
 CustomNPCStrategy::randomize(const RepositoryID *in_out_ID) {
-  spdlog::get("console")->info("CustomNPCStrategy::randomize");
   if (!repo.contains(*in_out_ID)) {
-    spdlog::get("console")->info(
-        "CustomNPCStrategy::randomize: skipped (not in repo) [{}]",
-        in_out_ID->toString());
+    spdlog::get("console")->info("CustomNPCStrategy::randomize: skipped (not in repo) [{}]", in_out_ID->toString());
     return in_out_ID;
   }
 
   auto in_item = repo.getItem(*in_out_ID);
 
   if (in_item->isEssential()) {
-    spdlog::get("console")->info(
-        "CustomNPCStrategy::randomize: skipped (essential) [{}]",
-        repo.getItem(*in_out_ID)->string());
+    spdlog::get("console")->info("CustomNPCStrategy::randomize: skipped (essential) [{}]", repo.getItem(*in_out_ID)->string());
     return in_out_ID;
   }
   auto result = *select_randomly(item_pool_.begin(), item_pool_.end());

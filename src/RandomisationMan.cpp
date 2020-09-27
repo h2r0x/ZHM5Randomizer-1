@@ -124,7 +124,6 @@ void RandomisationMan::registerRandomizer(RandomizerSlot slot,
 
 void RandomisationMan::initializeRandomizers(const SSceneInitParameters *sip) {
   auto logger = spdlog::get("console");
-  logger->info("RandomisationMan::initializeRandomizers");
   auto scenario = Scenario::from_SceneInitParams(*sip);
   if (scenario.string() == "NONE") {
     return;

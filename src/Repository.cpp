@@ -5,9 +5,11 @@
 #include <fstream>
 #include <unordered_set>
 
-#include "Item.h"
-#include "RNG.h"
-#include "RepositoryID.h"
+#include "spdlog/spdlog.h"
+
+#include "ZHM5Randomizer/src/Item.h"
+#include "ZHM5Randomizer/src/RNG.h"
+#include "ZHM5Randomizer/src/RepositoryID.h"
 
 using json = nlohmann::json;
 
@@ -20,7 +22,7 @@ ItemRepository::ItemRepository() {
   ignorelist_ifs.close();
 
   std::unordered_set<RepositoryID> ignore_list;
-  for (const auto& it : ig_set["GLOBAL_IGNORE_LIST"].items()) {
+  for (const auto &it : ig_set["GLOBAL_IGNORE_LIST"].items()) {
     RepositoryID id(it.value());
     ignore_list.insert(id);
   }
@@ -32,7 +34,7 @@ ItemRepository::ItemRepository() {
   repository_ifs >> repository_json;
   repository_ifs.close();
 
-  for (const auto& it : repository_json.items()) {
+  for (const auto &it : repository_json.items()) {
     RepositoryID id(it.key());
     if (!ignore_list.count(id)) {
       ids.insert(id);
@@ -41,43 +43,47 @@ ItemRepository::ItemRepository() {
   }
 }
 
-const RepositoryID* ItemRepository::getStablePointer(
-    const RepositoryID& in) const {
-  for (const auto& id : ids)
-    if (id == in) return &id;
+const RepositoryID *
+ItemRepository::getStablePointer(const RepositoryID &in) const {
+  for (const auto &id : ids)
+    if (id == in)
+      return &id;
   return nullptr;
 }
 
-const Item* ItemRepository::getItem(const RepositoryID& id) const {
-  if (contains(id)) return &items.at(id);
+const Item *ItemRepository::getItem(const RepositoryID &id) const {
+  if (contains(id))
+    return &items.at(id);
   return nullptr;
 }
 
-const std::unordered_set<RepositoryID>& ItemRepository::getIds() const {
+const std::unordered_set<RepositoryID> &ItemRepository::getIds() const {
   return ids;
 }
 
-bool ItemRepository::contains(const RepositoryID& id) const {
-  if (items.count(id)) return true;
+bool ItemRepository::contains(const RepositoryID &id) const {
+  if (items.count(id))
+    return true;
   return false;
 }
 
 RandomDrawRepository::RandomDrawRepository()
     : rng_engine(RNG::inst().getEngine()) {}
 
-RandomDrawRepository& RandomDrawRepository::inst() {
+RandomDrawRepository &RandomDrawRepository::inst() {
   static RandomDrawRepository instance;
   return instance;
 }
 
-void RandomDrawRepository::getRandom(std::vector<const RepositoryID*>& item_set,
-                                     unsigned int count,
-                                     bool (Item::*fn)() const) {
-  auto hash = (void*&)fn;
+void RandomDrawRepository::getRandom(
+    std::vector<const RepositoryID *> &item_set, unsigned int count,
+    bool (Item::*fn)() const) {
+  auto hash = (void *&)fn;
   if (!cache.count(hash)) {
-    cache[hash] = new std::vector<const RepositoryID*>();
-    for (const auto& id : getIds()) {
-      if ((getItem(id)->*fn)()) cache[hash]->push_back(&id);
+    cache[hash] = new std::vector<const RepositoryID *>();
+    for (const auto &id : getIds()) {
+      if ((getItem(id)->*fn)())
+        cache[hash]->push_back(&id);
     }
   }
 
@@ -87,25 +93,41 @@ void RandomDrawRepository::getRandom(std::vector<const RepositoryID*>& item_set,
     item_set.push_back(cache[hash]->operator[](dist(*rng_engine)));
 }
 
-const RepositoryID* RandomDrawRepository::getRandom(
-    std::function<bool(const Item&)> fn) {
-  std::vector<const RepositoryID*> res;
+const RepositoryID *
+RandomDrawRepository::getRandom(std::function<bool(const Item &)> fn) {
+  std::vector<const RepositoryID *> res;
   getRandom(res, 1, fn);
   return res[0];
 }
 
 // TODO: build cacheable version of this function that takes  bool(Item::*
 // fn)(const Item&)const instead of lambda
-void RandomDrawRepository::getRandom(std::vector<const RepositoryID*>& item_set,
-                                     unsigned int count,
-                                     std::function<bool(const Item&)> fn) {
-  auto candidates = std::vector<const RepositoryID*>();
-  for (const auto& id : getIds()) {
-    if (fn(*getItem(id))) candidates.push_back(&id);
+void RandomDrawRepository::getRandom(
+    std::vector<const RepositoryID *> &item_set, unsigned int count,
+    std::function<bool(const Item &)> fn) {
+  auto candidates = std::vector<const RepositoryID *>();
+  for (const auto &id : getIds()) {
+    auto candidate = *getItem(id);
+    if (fn(candidate)) {
+      candidates.push_back(&id);
+    }
   }
-
   auto dist = std::uniform_int_distribution<int>(0, candidates.size() - 1);
 
-  for (int i = 0; i < count; ++i)
+  for (int i = 0; i < count; ++i) {
     item_set.push_back(candidates[dist(*rng_engine)]);
+  }
 }
+
+void RandomDrawRepository::AllMatches(
+    std::vector<const RepositoryID *> &item_set, unsigned int count,
+    std::function<bool(const Item &)> fn) {
+  auto candidates = std::vector<const RepositoryID *>();
+  for (const auto &id : getIds()) {
+    auto candidate = *getItem(id);
+    if (fn(candidate)) {
+      item_set.push_back(&id);
+    }
+  }
+}
+

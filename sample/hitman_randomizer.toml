@@ -20,14 +20,10 @@ RNGSeed = 0
 
 [Custom.World]
 allowed_words = []
-allowed_categories = []
 ignored_words = []
-ignored_categories = []
 
 [Custom.NPC]
 allowed_words = []
-allowed_categories = []
 ignored_words = []
-ignored_categories = []
 
 

@@ -1,5 +1,8 @@
-#pragma once
+#ifndef __ZHM5_RANDOMIZER_SRC_CONFIG_H__
+#define __ZHM5_RANDOMIZER_SRC_CONFIG_H__
 
+#include <algorithm>
+#include <cctype>
 #include <memory>
 #include <ostream>
 #include <set>
@@ -15,9 +18,7 @@ class CustomRules {
 public:
   // private:
   std::set<std::string> allowed_words_;
-  std::set<std::string> allowed_categories_;
   std::set<std::string> ignored_words_;
-  std::set<std::string> ignored_categories_;
 
   const std::string ToString() const {
     std::stringstream fmt;
@@ -25,18 +26,10 @@ public:
     std::copy(allowed_words_.begin(), allowed_words_.end(),
               std::ostream_iterator<std::string>(fmt, " "));
     fmt << "] ";
-    fmt << "+Categories[";
-    std::copy(allowed_categories_.begin(), allowed_categories_.end(),
-              std::ostream_iterator<std::string>(fmt, " "));
-    fmt << "] ";
     fmt << "-Words[";
     std::copy(ignored_words_.begin(), ignored_words_.end(),
               std::ostream_iterator<std::string>(fmt, " "));
     fmt << "] ";
-    fmt << "-Categories[";
-    std::copy(allowed_categories_.begin(), allowed_categories_.end(),
-              std::ostream_iterator<std::string>(fmt, " "));
-    fmt << "]";
 
     return fmt.str();
   }
@@ -45,61 +38,59 @@ public:
     if (it.title() == "") {
       return false;
     }
-    
-    if (allowed_categories_.size() == 0 && ignored_categories_.size() == 0 &&
-        allowed_words_.size() == 0 && allowed_categories_.size() == 0) {
+
+    if (it.getType() == ICON::QUESTITEM || it.getType() == ICON::KEY ||
+        it.getType() == ICON::REMOTE) {
+      return false;
+    }
+
+    if (allowed_words_.size() == 0 && ignored_words_.size() == 0) {
       return true;
     }
 
     bool matches_allowed_word = false;
-    bool matches_allowed_category = false;
     bool matches_ignored_word = false;
-    bool matches_ignored_category = false;
 
-    if (allowed_categories_.empty()) {
-      matches_allowed_category = true;
-    }
-    for (auto &category : allowed_categories_) {
-      if (it.IconString() == category) {
-        matches_allowed_category = true;
-      }
-    }
-    for (auto &category : ignored_categories_) {
-      if (it.IconString() == category) {
-        matches_ignored_category = true;
-      }
-    }
-    if (allowed_words_.empty()) {
-      matches_allowed_word = true;
-    }
     for (auto &word : allowed_words_) {
-      if (it.title().find(word) == std::string::npos) {
+      if (this->findStringIC(it.title(), word)) {
+        matches_allowed_word = true;
+      } else if (it.IconString() == word) {
         matches_allowed_word = true;
       }
     }
     for (auto &word : ignored_words_) {
-      if (it.title().find(word) != std::string::npos) {
+      if (this->findStringIC(it.title(), word)) {
+        matches_ignored_word = true;
+      } else if (it.IconString() == word) {
         matches_ignored_word = true;
       }
     }
 
-    if ((matches_ignored_word || matches_ignored_category) &&
-        (matches_allowed_word || matches_ignored_category)) {
-      spdlog::get("console")->error(
+    if (matches_ignored_word && matches_allowed_word) {
+      spdlog::get("console")->warn(
           "The item {} is both allowed and ignored. This is probably bad.",
           it.title());
     }
 
-    if (matches_ignored_category || matches_ignored_word) {
+    if (matches_ignored_word) {
       return false;
     }
 
-    if ((allowed_words_.empty() || matches_allowed_word) &&
-        (allowed_categories_.empty() || matches_allowed_category)) {
+    if (allowed_words_.empty() || matches_allowed_word) {
       return true;
     }
 
     return false;
+  }
+
+  const bool findStringIC(const std::string &strHaystack,
+                    const std::string &strNeedle) const {
+    auto it =
+        std::search(strHaystack.begin(), strHaystack.end(), strNeedle.begin(),
+                    strNeedle.end(), [](char ch1, char ch2) {
+                      return std::toupper(ch1) == std::toupper(ch2);
+                    });
+    return (it != strHaystack.end());
   }
 };
 
@@ -144,3 +135,5 @@ private:
 };
 
 } // namespace hitman_randomizer
+
+#endif // __ZHM5_RANDOMIZER_SRC_CONFIG_H__

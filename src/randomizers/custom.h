@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __ZHM5RANDOMIZER_SRC_RANDOMIZERS_H__
+#define __ZHM5RANDOMIZER_SRC_RANDOMIZERS_H__
 
 #include <queue>
 #include <random>
@@ -44,3 +45,5 @@ public:
 private:
   std::vector<const RepositoryID*> item_pool_;
 };
+
+#endif  // __ZHM5RANDOMIZER_SRC_RANDOMIZERS_H__

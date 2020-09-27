@@ -1,8 +1,11 @@
 #pragma once
 
 #include <string>
+#include <sstream>
+#include <ostream>
 
 #include "..\thirdparty\json.hpp"
+#include "spdlog/spdlog.h"
 
 using json = nlohmann::json;
 
@@ -97,12 +100,12 @@ public:
         break;
       }
     }
-    return "THIS_SHOULD_NEVER_HAPPEN";
+    spdlog::get("console")->error(
+        "Could not find matching icon for type {}", getType());
+    throw "Could not find matching icon";
   }
 
-  const std::string& title() const {
-    return title_;
-  }
+  const std::string &title() const { return title_; }
   const std::string &string() const;
   const std::string &name_LOC() const { return name_LOC_; }
   const ICON &getType() const;
@@ -110,6 +113,12 @@ public:
   const SILENCE_RATING &getSilenceRating() const;
 
   void print() const;
+
+  const std::string toString() const {
+        std::stringstream fmt;
+    fmt << "Item{" << title() << ", " << string() << ", " << IconString() << "}";
+    return fmt.str();
+  }
 
   std::unordered_map<std::string, ICON> icon_map{
       {"melee", ICON::MELEE},

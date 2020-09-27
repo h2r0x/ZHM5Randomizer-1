@@ -49,4 +49,8 @@ class RandomDrawRepository : public ItemRepository {
                  bool (Item::*fn)() const);
   void getRandom(std::vector<const RepositoryID*>& item_set, unsigned int count,
                  std::function<bool(const Item& it)>);
+void RandomDrawRepository::AllMatches(
+    std::vector<const RepositoryID *> &item_set, unsigned int count,
+    std::function<bool(const Item &)> fn);
+
 };

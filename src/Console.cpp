@@ -1,4 +1,4 @@
-#include "Console.h"
+#include "ZHM5Randomizer/src/Console.h"
 
 #include <Windows.h>
 
@@ -12,8 +12,7 @@
 #include "spdlog/sinks/stdout_color_sinks.h"
 #include "spdlog/spdlog.h"
 
-
-#include "Config.h"
+#include "ZHM5Randomizer/src/Config.h"
 
 void Console::spawn() {
   AllocConsole();
@@ -28,7 +27,7 @@ void Console::spawn() {
   auto logger = spdlog::basic_logger_mt("console", log_path, true);
   logger->flush_on(spdlog::level::debug);
   logger->set_level(spdlog::level::debug);
-  logger->info("Console::spawn()");
+  logger->info("Log file initialized.");
 
   } catch (const spdlog::spdlog_ex &ex) {
     std::cout << "Log init failed: " << ex.what() << std::endl;

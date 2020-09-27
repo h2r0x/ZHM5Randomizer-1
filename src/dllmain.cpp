@@ -4,11 +4,12 @@
 #include <filesystem>
 #include <iostream>
 
-#include "Config.h"
-#include "Console.h"
-#include "RandomisationMan.h"
-#include "SceneLoadObserver.h"
 #include "absl/memory/memory.h"
+
+#include "ZHM5Randomizer/src/Console.h"
+#include "ZHM5Randomizer/src/RandomisationMan.h"
+#include "ZHM5Randomizer/src/SceneLoadObserver.h"
+#include "ZHM5Randomizer/src/Config.h"
 
 typedef DWORD64(__stdcall *DIRECTINPUT8CREATE)(HINSTANCE, DWORD, REFIID,
                                                LPVOID *, LPUNKNOWN);

@@ -1,4 +1,4 @@
-#include "Config.h"
+#include "ZHM5Randomizer/src/Config.h"
 
 #include <Windows.h>
 
@@ -35,15 +35,13 @@ void Config::Load() {
     std::stringstream buffer;
     buffer << t.rdbuf();
     tbl = toml::parse(buffer.str());
-    writer << "Success reading toml:" << tbl;
-    logger->info(writer.str());
+    logger->info("Success reading toml.");
   } catch (const toml::parse_error &err) {
     writer << "Failed to load file: " << ini_path << ", err: " << err;
     logger->info(writer.str());
     ExitProcess(0);
   } catch (...) {
-    writer << "Unknown error reading toml";
-    logger->error(writer.str());
+    logger->error("Unknown error reading toml.");
     ExitProcess(0);
   }
 
@@ -75,34 +73,12 @@ void Config::Load() {
       });
     }
   }
-  if (toml::array *arr = custom_world["allowed_categories"].as_array()) {
-    for (toml::node &elem : *arr) {
-      elem.visit([this](auto &&el) noexcept {
-        if constexpr (toml::is_string<decltype(el)>) {
-          if (el != "") {
-            this->custom_world_rules_.allowed_categories_.insert(*el);
-          }
-        }
-      });
-    }
-  }
   if (toml::array *arr = custom_world["ignored_words"].as_array()) {
     for (toml::node &elem : *arr) {
       elem.visit([this](auto &&el) noexcept {
         if constexpr (toml::is_string<decltype(el)>) {
           if (el != "") {
             this->custom_world_rules_.ignored_words_.insert(*el);
-          }
-        }
-      });
-    }
-  }
-  if (toml::array *arr = custom_world["ignored_categories"].as_array()) {
-    for (toml::node &elem : *arr) {
-      elem.visit([this](auto &&el) noexcept {
-        if constexpr (toml::is_string<decltype(el)>) {
-          if (el != "") {
-            this->custom_world_rules_.ignored_categories_.insert(*el);
           }
         }
       });
@@ -121,17 +97,6 @@ void Config::Load() {
       });
     }
   }
-  if (toml::array *arr = custom_npc["allowed_categories"].as_array()) {
-    for (toml::node &elem : *arr) {
-      elem.visit([this](auto &&el) noexcept {
-        if constexpr (toml::is_string<decltype(el)>) {
-          if (el != "") {
-            this->custom_npc_rules_.allowed_categories_.insert(*el);
-          }
-        }
-      });
-    }
-  }
   if (toml::array *arr = custom_npc["ignored_words"].as_array()) {
     for (toml::node &elem : *arr) {
       elem.visit([this](auto &&el) noexcept {
@@ -143,20 +108,6 @@ void Config::Load() {
       });
     }
   }
-  if (toml::array *arr = custom_npc["ignored_categories"].as_array()) {
-    for (toml::node &elem : *arr) {
-      elem.visit([this](auto &&el) noexcept {
-        if constexpr (toml::is_string<decltype(el)>) {
-          if (el != "") {
-            this->custom_npc_rules_.ignored_categories_.insert(*el);
-          }
-        }
-      });
-    }
-  }
-
-  logger->info("NPCS: {}", custom_npc_rules_.ToString());
-  logger->info("WORLD: {}", custom_world_rules_.ToString());
 }
 
 } // namespace hitman_randomizer

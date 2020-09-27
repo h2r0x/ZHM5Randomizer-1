@@ -20,31 +20,22 @@ void RandomisationStrategy::initialize(Scenario, const DefaultItemPool *const) {
 
 const RepositoryID *
 WorldInventoryRandomisation::randomize(const RepositoryID *in_out_ID) {
-  spdlog::get("console")->info("WorldInventoryRandomisation::randomize");
   if (repo.contains(*in_out_ID) && item_queue.size()) {
-    spdlog::get("console")->info("repo.contains(*in_out_ID) && item_queue.size()");
     const RepositoryID *id = item_queue.front();
     item_queue.pop();
-    spdlog::get("console")->info(
-        "WorldInventoryRandomisation::randomize: {}: {} -> {}",
-        static_cast<int>(item_queue.size()), repo.getItem(*in_out_ID)->string(),
-        repo.getItem(*id)->string());
+    // spdlog::get("console")->info(
+    //     "WorldInventoryRandomisation::randomize: {}: {} -> {}",
+    //     static_cast<int>(item_queue.size()), repo.getItem(*in_out_ID)->string(),
+    //     repo.getItem(*id)->string());
     return id;
   } else {
-    spdlog::get("console")->info("else");
     if (!item_queue.size()) {
-      spdlog::get("console")->info("WorldInventoryRandomisation::randomize: "
-                                   "skipped (queue exhausted) [{}]",
-                                   in_out_ID->toString());
+      spdlog::get("console")->info("WorldInventoryRandomisation::randomize: skipped (queue exhausted) [{}]", in_out_ID->toString());
     } else {
-      spdlog::get("console")->info(
-          "WorldInventoryRandomisation::randomize: skipped (not in repo) [{}]",
-          in_out_ID->toString());
+      spdlog::get("console")->info("WorldInventoryRandomisation::randomize: skipped (not in repo) [{}]", in_out_ID->toString());
     }
     return in_out_ID;
   }
-  spdlog::get("console")->info(
-      "WorldInventoryRandomisation::randomize complete.");
 }
 
 void setupTools(std::vector<const RepositoryID *> &items) {}
@@ -106,15 +97,15 @@ void WorldInventoryRandomisation::initialize(
   for (const auto &id : new_item_pool)
     item_queue.push(id);
 
-  // TODO: Move this print code
-  Console::log("ItemPool report:\n");
-  Console::log("total size: %d(%d)\n", default_item_pool_size,
-               static_cast<int>(new_item_pool.size()));
-  Console::log("\tessentials: %d\n", essential_item_count);
-  Console::log("\tweapons: %d\n",
-               static_cast<int>(default_item_pool_weapon_count));
-  Console::log("\trandom: %d\n", random_item_count);
-  Console::log("\n");
+  // // TODO: Move this print code
+  // Console::log("ItemPool report:\n");
+  // Console::log("total size: %d(%d)\n", default_item_pool_size,
+  //              static_cast<int>(new_item_pool.size()));
+  // Console::log("\tessentials: %d\n", essential_item_count);
+  // Console::log("\tweapons: %d\n",
+  //              static_cast<int>(default_item_pool_weapon_count));
+  // Console::log("\trandom: %d\n", random_item_count);
+  // Console::log("\n");
 }
 
 const RepositoryID *
