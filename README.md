@@ -1,3 +1,19 @@
+## ZHM5Randomizer WSO
+
+![](randomizer_logo.png)
+
+This is Warriorstar's branch of the excellent ZHM5Randomizer. It includes a
+handful of new randomization types, as well as the `CUSTOM` mode which allows
+for modifying random generation via the configuration file.
+
+[Download][] the latest preview release, and install as described in the
+original README below. To configure `CUSTOM` mode, follow the instructions in
+hitman_randomizer.toml, which should have been unzipped in `HITMAN2/Retail`.
+
+The original README is below.
+
+[Download]: https://github.com/warriorstar-orion/ZHM5Randomizer/releases/latest
+
 ## ZHM5Randomizer
 --------------------
 ZHM5Randomizer is a smart item randomizer for hitman 2 (2018) that allows randomization of world, hero, npc and stash inventories. It's easy to use, customize and extend.

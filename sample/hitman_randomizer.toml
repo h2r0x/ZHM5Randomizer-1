@@ -1,11 +1,13 @@
 [ZHM5Randomizer]
-# World randomizers: NONE, DEFAULT, OOPS_ALL_EXPLOSIVES
+# World randomizers: NONE, DEFAULT, OOPS_ALL_EXPLOSIVES, TREASURE_HUNT,
+# NO_ITEMS, ACTION, CUSTOM
 worldInventoryRandomizer = "DEFAULT"
 
 # Hero randomizers: NONE, DEFAULT
 heroInventoryRandomizer  = "DEFAULT"
 
-# NPC randomizers: NONE, DEFAULT, HARD, SLEEPY, CHAIN_REACTION
+# NPC randomizers: NONE, DEFAULT, UNLIMITED, HARD, SLEEPY, CHAIN_REACTION,
+# CUSTOM
 npcInventoryRandomizer   = "DEFAULT"
 
 # Stash randomizers: NONE, DEFAULT
@@ -17,6 +19,29 @@ randomizeNPCGrenades = true
 RNGSeed = 0
 
 [Custom]
+# These are the settings for the above "CUSTOM" NPC and world randomizers.
+#
+# Items will only be added to the randomization if they match the rules below.
+# A word in an item name like the "syringe" in "Lethal Syringe" is allowed, or
+# a category as listed below.
+#
+# If ignored_words are used, if an item has that string in its name or matches a
+# category, they will never be added to the randomization. I would suggest not
+# using ignored_words because it's kind of buggy.
+#
+# Allowed category names:
+#
+# melee
+# explosives
+# tool
+# sniperrifle
+# assaultrifle
+# shotgun
+# suitcase
+# pistol
+# distraction
+# poison
+# smg
 
 [Custom.World]
 allowed_words = []
