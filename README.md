@@ -8,27 +8,99 @@ for modifying random generation via the configuration file.
 
 [Download][] the latest preview release, and install as described in the
 original README below. To configure `CUSTOM` mode, follow the instructions in
-hitman_randomizer.toml, which should have been unzipped in `HITMAN2/Retail`.
-
-The original README is below.
+`hitman_randomizer.toml`, which should have been unzipped in `HITMAN2/Retail`.
 
 [Download]: https://github.com/warriorstar-orion/ZHM5Randomizer/releases/latest
 
-## ZHM5Randomizer
---------------------
-ZHM5Randomizer is a smart item randomizer for hitman 2 (2018) that allows randomization of world, hero, npc and stash inventories. It's easy to use, customize and extend.
+## How It Works
 
-#### How to install / use:
-- Download the latest release here: [Download](https://github.com/pawREP/ZHM5Randomizer/releases/latest "Download")
-- Extract all the files into `..\HITMAN2\Retail` (yes, even if you are using DX12).
-- Optionally, configure the randomizer by modifying `ZHM5Randomizer.ini`.
-- Start the game as usual, start a new mission and enjoy.
+There are four "inventories" that the Randomizer juggles:
 
-#### Limitations / Bugs
+1. 47's, or the "Hero" starting inventory
+2. The "NPC" inventory of anyone carrying weapons, keys, or quest items
+3. The "world" inventory which changes the statically placed objects in the level
+4. The "stash" inventory which alters the contents of 47's stashed item
+
+## The Game Modes
+
+The Randomizer comes pre-configured with a handful of game modes to make your
+missions more fun or challenging.
+
+### `DEFAULT` and `NONE`
+
+Every inventory supports a `DEFAULT` config. `DEFAULT` configs all work the same
+way: all items are randomly placed. In the case of weapons, they are randomly
+replaced with a weapon of the same type.
+
+Similarly, every inventory supports a `NONE` config, which disables
+randomization for that inventory.
+
+### World Configs
+
+Besides `DEFAULT`, the "world" inventory has the following configs:
+
+1. `OOPS_ALL_EXPLOSIVES` replaces all items with explosives.
+2. `TREASURE_HUNT` randomizes items, but replaces ten of them with golden idols. Find them all!
+3. `NO_ITEMS` replaces all non-essential items with coins, and all weapons with the Hackl 9S.
+4. `ACTION` replaces all non-essential items with explosives, coins, or weapons.
+5. `CUSTOM`: see the section below.
+
+### NPC Configs
+
+Besides `DEFAULT`, the "NPC" inventory has the following configs:
+
+1. `UNLIMITED` replaces all NPC weapons with any weapon that the randomizer knows about.
+2. In `HARD` mode, all NPCs will spawn with one of a handful of pre-chosen, non-silenced weapons. 
+   Nearly all NPCs will be carrying SMGs instead of pistols.
+3. `SLEEPY` mode replaces all NPC weapons with cure coins. Cure coins cause a person to become 
+   unconscious after being picked up, and always attracts NPCs.
+4. `CHAIN_REACTION` mode replaces some NPC weapons with cure coins, and some with octane boosters.
+
+### `CUSTOM`
+
+World and NPC inventories support `CUSTOM` mode. In `CUSTOM` mode, you can
+configure the randomization rules yourself!
+
+Items will only be added to the randomization if they match one of the words in
+the allow list. Likewise, if an item matches a word in the ignore list, it won't
+spawn.
+
+If ignored_words are used, if an item has that string in its name or matches a
+category, they will never be added to the randomization. ignored_words is kind
+of buggy but the logic should still make sense.
+
+A word in an item name like the "syringe" in "Lethal Syringe" is allowed, or
+a category as listed below. These are the categories it understands:
+
+- "melee"
+- "explosives"
+- "tool"
+- "sniperrifle"
+- "assaultrifle"
+- "shotgun"
+- "suitcase"
+- "pistol"
+- "distraction"
+- "poison"
+- "smg"
+
+Here's an example configuration for `CUSTOM` mode. Try it yourself!
+
+```toml
+
+[Custom.World]
+allowed_words = ["coin cure", "kalmer", "lethal proximity", "pristine", "Lethal Poison Syringe Modern", "Emetic Poison Syringe S2"]
+ignored_words = ["remote", "anti-virus", "masamune", "sedative", "antique", "taser", "cx", "duck", "serum", "agent", "rusty", "lockpick"]
+
+[Custom.NPC]
+allowed_words = ["striker"]
+ignored_words = []
+
+```
+
+## Limitations and Bugs
 - Loading save files is not supported.
 - Restarting missions from the pause menu is not supported. You have to visit the main menu and restart the mission from there.
 - Re-planning missions from the pause menu is not supported, unless the difficulty is changed.
-- While all missions are completable, some mission objectives might not be. For example, not all clues are fully functional in whittleton creek.
+- While all missions are completable, some mission objectives might not be. For example, not all clues are fully functional in Whittleton Creek.
 
-#### How to extend the randomizer with custom randomization logic
-The randomizer was build with easy extendablity in mind. Randomizers have to implement the `RandomizationStrategy` interface and they have to be added as part of a randomizer collection in `RandomisationMan::configureRandomizerCollection()`. The central functionality of any randomizer is implemented in `RepositoryID* RandomizationStrategy::randomize(const RepositoryID*)`. This function gets called by a hook into the game code whenever the game tries to spawn an item. The input id, represents the item the game attempted to spawn, the returned id is the, potentially randomized, id the game will spawn instead. If randomizers implement `RandomisationStrategy::initialize`, they will be notified when a new game scenario is loaded and they will be provided with the default item pool for this scenario. This can be very helpful when writing stateful randomizers where knowledge of the complete item pool is required before `randomize` is called for the first time. `WorldInventoryRandomisation` is an example where this is the case.

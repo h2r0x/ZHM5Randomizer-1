@@ -42,7 +42,7 @@ std::unordered_map<std::string, RandomisationStrategy *(*)(std::shared_ptr<hitma
     {"NONE", &createInstance<IdentityRandomisation>},
     {"DEFAULT", &createInstance<NPCItemRandomisation>},
     {"UNLIMITED", &createInstance<UnlimitedNPCItemRandomization>},
-    {"HARD", &createInstance<UnrestrictedNPCRandomization>},
+    {"HARD", &createInstance<HardNPCRandomization>},
     {"SLEEPY", &createInstance<SleepyNPCRandomization>},
     {"CHAIN_REACTION", &createInstance<ChainReactionNPCRandomization>},
     {"CUSTOM", &createInstance<CustomNPCStrategy>},

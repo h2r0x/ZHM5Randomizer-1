@@ -52,16 +52,20 @@ public:
     bool matches_ignored_word = false;
 
     for (auto &word : allowed_words_) {
-      if (this->findStringIC(it.title(), word)) {
+      if (it.IconString() == word) {
         matches_allowed_word = true;
-      } else if (it.IconString() == word) {
+      } else if (this->findStringIC(it.title(), word)) {
+        matches_allowed_word = true;
+      } else if (this->findStringIC(it.string(), word)) {
         matches_allowed_word = true;
       }
     }
     for (auto &word : ignored_words_) {
-      if (this->findStringIC(it.title(), word)) {
+      if (it.IconString() == word) {
         matches_ignored_word = true;
-      } else if (it.IconString() == word) {
+      } else if (this->findStringIC(it.title(), word)) {
+        matches_ignored_word = true;
+      } else if (this->findStringIC(it.string(), word)) {
         matches_ignored_word = true;
       }
     }

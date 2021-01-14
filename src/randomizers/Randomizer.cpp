@@ -48,26 +48,6 @@ void WorldInventoryRandomisation::initialize(
   default_pool->get(new_item_pool, &Item::isEssential);
   unsigned int essential_item_count = new_item_pool.size();
 
-  // Tool items
-  // TODO: factor this out of init
-  auto crowbar = repo.getStablePointer(
-      RepositoryID("01ed6d15-e26e-4362-b1a6-363684a7d0fd"));
-  auto screwdriver = repo.getStablePointer(
-      RepositoryID("12cb6b51-a6dd-4bf5-9653-0ab727820cac"));
-  auto wrench = repo.getStablePointer(
-      RepositoryID("6adddf7e-6879-4d51-a7e2-6a25ffdca6ae"));
-
-  auto addOriginalNumberOfItems = [default_pool,
-                                   &new_item_pool](const RepositoryID *id) {
-    auto cnt = default_pool->getCount(*id);
-    for (int i = 0; i < cnt; ++i)
-      new_item_pool.push_back(id);
-  };
-
-  addOriginalNumberOfItems(crowbar);
-  addOriginalNumberOfItems(screwdriver);
-  addOriginalNumberOfItems(wrench);
-
   // Fill remaining slots with random items
   size_t default_item_pool_weapon_count =
       default_pool->getCount(&Item::isWeapon);
@@ -254,7 +234,7 @@ NoItemsWorldInventoryRandomization::randomize(const RepositoryID *in_out_ID) {
 }
 
 /** Replaces all non-essential, non-quest items with coins, and all placed
- * weapons with a Shaskha. */
+ * weapons with a Hackl 9S. */
 void NoItemsWorldInventoryRandomization::initialize(
     Scenario scen, const DefaultItemPool *const default_pool) {
   std::vector<int> essential_items;
@@ -264,15 +244,15 @@ void NoItemsWorldInventoryRandomization::initialize(
   default_pool->getPosition(weapon_slots, &Item::isWeapon);
 
   std::vector<const RepositoryID *> new_item_pool;
-  auto rifle = repo.getStablePointer(
-      RepositoryID("6e4afb04-417e-4cfc-aaa2-43f3ecca9037"));
+  auto pistol = repo.getStablePointer(
+      RepositoryID("1e11fbea-cd51-48bf-8316-a050772d6135"));
   auto coin = repo.getStablePointer(
       RepositoryID("dda002e9-02b1-4208-82a5-cf059f3c79cf"));
 
   for (int i = 0; i < default_pool->size(); i++) {
     if (std::find(weapon_slots.begin(), weapon_slots.end(), i) !=
         weapon_slots.end()) {
-      new_item_pool.insert(new_item_pool.begin() + i, rifle);
+      new_item_pool.insert(new_item_pool.begin() + i, pistol);
     } else if (std::find(essential_items.begin(), essential_items.end(), i) !=
                essential_items.end()) {
       RepositoryID &original_item =
@@ -325,12 +305,6 @@ NPCItemRandomisation::randomize(const RepositoryID *in_out_ID) {
   }
 
   auto in_item = repo.getItem(*in_out_ID);
-
-  // Special case for flash grenades: ~10% banana chance
-  if ((*in_out_ID == RepositoryID("042fae7b-fe9e-4a83-ac7b-5c914a71b2ca") &&
-       config_->randomize_npc_grenades() && (rand() % 10 == 0)))
-    return repo.getStablePointer(
-        RepositoryID("903d273c-c750-441d-916a-31557fea3382")); // Banana
 
   // Only NPC weapons are randomized here, return original item if item isn't a
   // weapon
@@ -427,7 +401,7 @@ IdentityRandomisation::randomize(const RepositoryID *in_out_ID) {
 }
 
 const RepositoryID *
-UnrestrictedNPCRandomization::randomize(const RepositoryID *in_out_ID) {
+HardNPCRandomization::randomize(const RepositoryID *in_out_ID) {
   if (!repo.contains(*in_out_ID)) {
     Console::log(
         "NPCItemRandomisation::randomize: skipped (not in repo) [%s]\n",
@@ -464,7 +438,7 @@ UnrestrictedNPCRandomization::randomize(const RepositoryID *in_out_ID) {
       RepositoryID("e206ed81-0559-4289-9fec-e6a3e9d4ee7c"));
 
   if (in_item->isPistol()) {
-    int i = rand() % 2;
+    int i = rand() % 10;
     if (i == 0) {
       return pistol;
     } else {
@@ -497,17 +471,8 @@ SleepyNPCRandomization::randomize(const RepositoryID *in_out_ID) {
     return in_out_ID;
   }
 
-  // int i = rand() % 10;
-  // if (i == 0) {
-  //	return
-  // repo.getStablePointer(RepositoryID("6c3854f6-dbe0-410c-bd01-ddc35b402d0c"));
-  //}
-  // Cure coin
   return repo.getStablePointer(
       RepositoryID("6c3854f6-dbe0-410c-bd01-ddc35b402d0c"));
-  // Octane booster
-  // return repo.getStablePointer(
-  //     RepositoryID("c82fefa7-febe-46c8-90ec-c945fbef0cb4"));
 }
 
 const RepositoryID *

@@ -114,9 +114,9 @@ class StashInventoryRandomisation : public RandomisationStrategy {
 
 // Randomizes all NPC weapons without type restrictions and replaces flash
 // grenades with frag grenades.
-class UnrestrictedNPCRandomization : public RandomisationStrategy {
+class HardNPCRandomization : public RandomisationStrategy {
  public:
- UnrestrictedNPCRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
+ HardNPCRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
 
