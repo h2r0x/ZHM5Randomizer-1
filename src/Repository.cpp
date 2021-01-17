@@ -13,6 +13,9 @@
 
 using json = nlohmann::json;
 
+
+namespace hitman_randomizer {
+
 ItemRepository::ItemRepository() {
   std::string ignorelist_file = "..\\HITMAN2\\Retail\\IgnoreList.json";
   std::ifstream ignorelist_ifs(ignorelist_file);
@@ -131,3 +134,4 @@ void RandomDrawRepository::AllMatches(
   }
 }
 
+}  // namespace hitman_randomizer

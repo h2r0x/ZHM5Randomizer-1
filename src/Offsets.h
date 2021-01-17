@@ -1,5 +1,8 @@
 #pragma once
 
+
+namespace hitman_randomizer {
+
 // TODO: The naming here is a bit all over the place
 class GameOffsets {
  private:
@@ -29,3 +32,5 @@ class GameOffsets {
   void* getPushStashInventoryDetour() const;
   void** getZEntitySceneContext_LoadScene() const;
 };
+
+}  // namespace hitman_randomizer

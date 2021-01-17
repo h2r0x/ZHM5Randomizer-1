@@ -10,6 +10,8 @@
 
 using json = nlohmann::json;
 
+namespace hitman_randomizer {
+
 // Repository holds information about all game items
 class ItemRepository {
  private:
@@ -54,3 +56,5 @@ void RandomDrawRepository::AllMatches(
     std::function<bool(const Item &)> fn);
 
 };
+
+}  // namespace hitman_randomizer

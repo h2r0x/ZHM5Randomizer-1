@@ -13,8 +13,6 @@ npcInventoryRandomizer   = "DEFAULT"
 # Stash randomizers: NONE, DEFAULT
 stashInventoryRandomizer = "DEFAULT"
 
-randomizeNPCGrenades = true
-
 # 0 = no seed, re-randomized at mission start.
 RNGSeed = 0
 

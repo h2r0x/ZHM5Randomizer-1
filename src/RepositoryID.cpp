@@ -1,5 +1,7 @@
 #include "RepositoryID.h"
 
+namespace hitman_randomizer {
+
 RepositoryID::RepositoryID(const RepositoryID& guid) { id = guid.id; }
 
 RepositoryID::RepositoryID(const std::string& id_string) {
@@ -20,3 +22,5 @@ std::string RepositoryID::toString() const {
   UuidToStringA(&id, &guid_str);
   return std::string((char*)guid_str);
 }
+
+}  // namespace hitman_randomizer

@@ -13,10 +13,11 @@
 #include "ZHM5Randomizer/src/RNG.h"
 #include "ZHM5Randomizer/src/Repository.h"
 
+namespace hitman_randomizer {
 
 const RepositoryID *
 CustomWorldStrategy::randomize(const RepositoryID *in_out_ID) {
-  return WorldInventoryRandomisation::randomize(in_out_ID);
+  return DefaultWorldRandomization::randomize(in_out_ID);
 }
 
 void CustomWorldStrategy::initialize(
@@ -29,7 +30,7 @@ void CustomWorldStrategy::initialize(
   });
 
   if (item_pool.size() == 0) {
-    spdlog::get("console")->error("CustomWorldStrategy::randomize: could not find any matching items. Game will probably crash.");
+    log::error("CustomWorldStrategy::randomize: could not find any matching items. Game will probably crash.");
   }
 
   // Key and quest items
@@ -49,7 +50,7 @@ void CustomWorldStrategy::initialize(
     }
   }
 
-  spdlog::get("console")->info("CustomWorldStrategy::initialize complete with {} items.", item_pool.size());
+  log::info("CustomWorldStrategy::initialize complete with {} items.", item_pool.size());
 }
 
 void CustomNPCStrategy::initialize(Scenario scen,
@@ -58,26 +59,28 @@ void CustomNPCStrategy::initialize(Scenario scen,
     return config_->custom_npc_rules_.ShouldPermit(it);
   });
   if (item_pool_.size() == 0) {
-    spdlog::get("console")->error("CustomNPCStrategy::randomize: could not find any matching items. Game will probably crash.");
+    log::error("CustomNPCStrategy::randomize: could not find any matching items. Game will probably crash.");
   }
 
-  spdlog::get("console")->info("CustomNPCStrategy::initialize complete with {} items.", item_pool_.size());
+  log::info("CustomNPCStrategy::initialize complete with {} items.", item_pool_.size());
 }
 
 const RepositoryID *
 CustomNPCStrategy::randomize(const RepositoryID *in_out_ID) {
   if (!repo.contains(*in_out_ID)) {
-    spdlog::get("console")->info("CustomNPCStrategy::randomize: skipped (not in repo) [{}]", in_out_ID->toString());
+    log::info("CustomNPCStrategy::randomize: skipped (not in repo) [{}]", in_out_ID->toString());
     return in_out_ID;
   }
 
   auto in_item = repo.getItem(*in_out_ID);
 
   if (in_item->isEssential()) {
-    spdlog::get("console")->info("CustomNPCStrategy::randomize: skipped (essential) [{}]", repo.getItem(*in_out_ID)->string());
+    log::info("CustomNPCStrategy::randomize: skipped (essential) [{}]", repo.getItem(*in_out_ID)->string());
     return in_out_ID;
   }
   auto result = *select_randomly(item_pool_.begin(), item_pool_.end());
-  spdlog::get("console")->info("CustomNPCStrategy::randomize complete.");
+  log::info("CustomNPCStrategy::randomize complete.");
   return result;
 }
+
+}  // namespace hitman_randomizer

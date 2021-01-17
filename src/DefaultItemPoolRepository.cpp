@@ -3,6 +3,8 @@
 #include <memory>
 #include <fstream>
 
+namespace hitman_randomizer {
+
 DefaultItemPoolRepository::DefaultItemPoolRepository(std::string path) {
   std::ifstream ifs(path);
 
@@ -20,3 +22,5 @@ DefaultItemPool* DefaultItemPoolRepository::getDefaultPool(Scenario scen) {
   if (item_pools.count(scen)) return item_pools.at(scen).get();
   return nullptr;
 }
+
+}  // namespace hitman_randomizer

@@ -2,6 +2,9 @@
 
 #include <Windows.h>
 
+
+namespace hitman_randomizer {
+
 void* MemoryUtils::trampoline_memory_base = nullptr;
 
 // TODO: Replace with a proper jit assembler + detour class solution if more
@@ -59,3 +62,5 @@ void MemoryUtils::DetourVFTCall(void** vft_entry_addr, void* hook_function,
   *vft_entry_addr = hook_function;
   VirtualProtect(vft_entry_addr, sizeof(void*), oldProtection, &oldProtection);
 }
+
+}  // namespace hitman_randomizer

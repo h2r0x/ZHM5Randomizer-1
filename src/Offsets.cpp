@@ -4,6 +4,9 @@
 
 #include "spdlog/spdlog.h"
 
+
+namespace hitman_randomizer {
+
 GameOffsets::GameVersion GameOffsets::getVersion() const {
   void *image_base = (void *)0x140000000;
   auto dos_header = *reinterpret_cast<IMAGE_DOS_HEADER *>(image_base);
@@ -71,3 +74,5 @@ void *GameOffsets::getPushStashInventoryDetour() const {
 void **GameOffsets::getZEntitySceneContext_LoadScene() const {
   return offsets.pZEntitySceneContext_LoadScene;
 }
+
+}  // namespace hitman_randomizer

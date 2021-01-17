@@ -17,7 +17,6 @@
 namespace hitman_randomizer {
 
 void Config::Load() {
-  auto logger = spdlog::get("console");
   std::ostringstream writer;
 
   if (is_loaded_) {
@@ -35,13 +34,13 @@ void Config::Load() {
     std::stringstream buffer;
     buffer << t.rdbuf();
     tbl = toml::parse(buffer.str());
-    logger->info("Success reading toml.");
+    log::info("Success reading toml.");
   } catch (const toml::parse_error &err) {
     writer << "Failed to load file: " << ini_path << ", err: " << err;
-    logger->info(writer.str());
+    log::info(writer.str());
     ExitProcess(0);
   } catch (...) {
-    logger->error("Unknown error reading toml.");
+    log::error("Unknown error reading toml.");
     ExitProcess(0);
   }
 
@@ -54,8 +53,6 @@ void Config::Load() {
   stash_inventory_randomizer_ =
       tbl["ZHM5Randomizer"]["stashInventoryRandomizer"].value_or("NONE");
 
-  randomizeNPCGrenades =
-      tbl["ZHM5Randomizer"]["randomizeNPCGrenades"].value_or(false);
   RNGSeed = tbl["ZHM5Randomizer"]["RNGSeed"].value_or(0);
   is_loaded_ = true;
 

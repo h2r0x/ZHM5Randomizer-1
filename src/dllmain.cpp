@@ -7,7 +7,7 @@
 #include "absl/memory/memory.h"
 
 #include "ZHM5Randomizer/src/Console.h"
-#include "ZHM5Randomizer/src/RandomisationMan.h"
+#include "ZHM5Randomizer/src/RandomizationMan.h"
 #include "ZHM5Randomizer/src/SceneLoadObserver.h"
 #include "ZHM5Randomizer/src/Config.h"
 
@@ -37,20 +37,20 @@ void loadOriginalDInput() {
   }
 }
 
-std::unique_ptr<RandomisationMan> randomisation_man;
+std::unique_ptr<hitman_randomizer::RandomizationMan> Randomization_man;
 std::unique_ptr<SceneLoadObserver> scene_load_observer;
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call,
                       LPVOID lpReserved) {
   switch (ul_reason_for_call) {
     case DLL_PROCESS_ATTACH: {
-      Console::spawn();
+      hitman_randomizer::log::spawn();
       auto config = std::make_shared<hitman_randomizer::Config>();
       config->Load();
 
       loadOriginalDInput();
 
-      randomisation_man = std::make_unique<RandomisationMan>(config);
+      Randomization_man = std::make_unique<hitman_randomizer::RandomizationMan>(config);
       scene_load_observer = std::make_unique<SceneLoadObserver>();
 
       auto loadConfigCallback = [config](const SSceneInitParameters *sip) {
@@ -59,8 +59,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD ul_reason_for_call,
       scene_load_observer->registerSceneLoadCallback(loadConfigCallback);
 
       auto loadCallback =
-          std::bind(&RandomisationMan::initializeRandomizers,
-                    randomisation_man.get(), std::placeholders::_1);
+          std::bind(&hitman_randomizer::RandomizationMan::initializeRandomizers,
+                    Randomization_man.get(), std::placeholders::_1);
       scene_load_observer->registerSceneLoadCallback(loadCallback);
     } break;
     case DLL_THREAD_ATTACH:

@@ -10,10 +10,10 @@ std::vector<tLoadSceneCallback> SceneLoadObserver::load_scene_callbacks;
 
 SceneLoadObserver::SceneLoadObserver() {
   o_load_scene = *reinterpret_cast<decltype(&o_load_scene)>(
-      GameOffsets::instance()->getZEntitySceneContext_LoadScene());
+      hitman_randomizer::GameOffsets::instance()->getZEntitySceneContext_LoadScene());
   printf("o_load_scene: 0x%I64x\n", (uintptr_t)o_load_scene);
-  MemoryUtils::DetourVFTCall(
-      GameOffsets::instance()->getZEntitySceneContext_LoadScene(), detour,
+  hitman_randomizer::MemoryUtils::DetourVFTCall(
+      hitman_randomizer::GameOffsets::instance()->getZEntitySceneContext_LoadScene(), detour,
       (void**)&o_load_scene);
 }
 

@@ -1,13 +1,20 @@
-#pragma once
+#ifndef __ZHM5_RANDOMIZER_SRC_ITEM_H__
+#define __ZHM5_RANDOMIZER_SRC_ITEM_H__
 
 #include <string>
 #include <sstream>
 #include <ostream>
 
+#include "ZHM5Randomizer/src/Console.h"
 #include "..\thirdparty\json.hpp"
 #include "spdlog/spdlog.h"
 
 using json = nlohmann::json;
+
+namespace hitman_randomizer {
+
+bool findStringIC(const std::string &strHaystack,
+                  const std::string &strNeedle);
 
 enum class ICON {
   MELEE,
@@ -55,16 +62,6 @@ enum class SILENCE_RATING {
 };
 
 class Item {
-  ICON icon;
-  CHEAT_GROUP cheat_group;
-  THROW_TYPE throw_type;
-  SILENCE_RATING silence_rating;
-
-  std::string common_name;
-  std::string title_;
-  std::string name_LOC_;
-  bool isCoin_;
-
 public:
   Item();
   Item(const json &config);
@@ -91,6 +88,35 @@ public:
   bool isDecorativeMeleeItem() const {
     return (!isWeapon()) && name_LOC().rfind("ui_prop_melee", 0) == 0;
   }
+  bool isItemAcceptableDefaultItem() const {
+    if (!isNotEssentialAndNotWeapon()) {
+      return false;
+    }
+    if (isTool()) {
+      // Default crowbar
+      if (GetId() == "01ed6d15-e26e-4362-b1a6-363684a7d0fd") {
+        return true;
+      }
+      // Default screwdriver
+      if (GetId() == "12cb6b51-a6dd-4bf5-9653-0ab727820cac") {
+        return true;
+      }
+      // Default wrench
+      if (GetId() == "6adddf7e-6879-4d51-a7e2-6a25ffdca6ae") {
+        return true;
+      }
+      // Pristine lockpick
+      if (GetId() == "2b2bdde8-19d2-40de-a2fa-f2ddf225d040") {
+        return true;
+      }
+      return false;
+    }
+    return true;
+  }
+
+  const std::string& GetId() const {
+    return id_;
+  }
 
   const std::string IconString() const {
     std::string icon_name;
@@ -100,7 +126,7 @@ public:
         break;
       }
     }
-    spdlog::get("console")->error(
+    log::error(
         "Could not find matching icon for type {}", getType());
     throw "Could not find matching icon";
   }
@@ -139,4 +165,22 @@ public:
       {"Container", ICON::CONTAINER},
       {"smg", ICON::SMG},
   };
+  
+  private:
+
+    ICON icon;
+    CHEAT_GROUP cheat_group;
+    THROW_TYPE throw_type;
+    SILENCE_RATING silence_rating;
+
+    std::string common_name;
+    std::string title_;
+    std::string name_LOC_;
+    bool isCoin_;
+    std::string id_;
+
 };
+
+} // namespace hitman_randomizer
+
+#endif  // __ZHM5_RANDOMIZER_SRC_ITEM_H__

@@ -5,6 +5,8 @@
 #include "DefaultItemPool.h"
 #include "Scenario.h"
 
+namespace hitman_randomizer {
+
 class DefaultItemPoolRepository {
  private:
   std::unordered_map<Scenario, std::unique_ptr<DefaultItemPool>> item_pools;
@@ -14,3 +16,5 @@ class DefaultItemPoolRepository {
 
   DefaultItemPool* getDefaultPool(Scenario);
 };
+
+}  // namespace hitman_randomizer

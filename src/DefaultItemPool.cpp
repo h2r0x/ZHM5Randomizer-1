@@ -4,6 +4,8 @@
 #include "Console.h"
 #include "Repository.h"
 
+namespace hitman_randomizer {
+
 DefaultItemPool::DefaultItemPool(json &json) {
   for (json::iterator item = json.begin(); item != json.end(); ++item) {
     RepositoryID id(item.value().get<std::string>());
@@ -61,9 +63,9 @@ size_t DefaultItemPool::getCount(const RepositoryID &id) const {
 
 void DefaultItemPool::print() const {
   auto repo = RandomDrawRepository::inst();
-  Console::log("DefaultPool report:\n");
+  log::info("DefaultPool report:\n");
   for (const auto &id : ids) {
-    Console::log("\t");
+    log::info("\t");
     repo.getItem(id)->print();
   }
 }
@@ -72,7 +74,4 @@ void DefaultItemPool::getIdAt(RepositoryID &repoId, int position) const {
   repoId = ids[position];
 }
 
-//
-// void DefaultItemPool::getPosition(std::vector<int> out,
-// std::function<bool(const Item&)> fn); int
-// DefaultItemPool::getCount(std::function<bool(const Item&)> fn);
+}  // namespace hitman_randomizer

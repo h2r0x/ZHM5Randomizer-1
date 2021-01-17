@@ -6,6 +6,8 @@
 #include <unordered_map>
 #include <vector>
 
+namespace hitman_randomizer {
+
 const Scenario Scenario::NONE = Scenario(0);
 const Scenario Scenario::LOCATION_PEACOCK_CASUAL = Scenario(1);
 const Scenario Scenario::LOCATION_PEACOCK_PROFESSIONAL = Scenario(2);
@@ -159,3 +161,5 @@ Scenario Scenario::from_SceneInitParams(const SSceneInitParameters& params) {
   if (scenario_hash_map.count(hash)) return scenario_hash_map.at(hash);
   return Scenario::NONE;
 }
+
+}  // namespace hitman_randomizer

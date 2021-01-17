@@ -1,6 +1,19 @@
 #include "ZHM5Randomizer/src/Item.h"
 
 #include <unordered_map>
+#include <string>
+
+namespace hitman_randomizer {
+
+bool findStringIC(const std::string &strHaystack,
+                  const std::string &strNeedle) {
+  auto it =
+      std::search(strHaystack.begin(), strHaystack.end(), strNeedle.begin(),
+                  strNeedle.end(), [](char ch1, char ch2) {
+                    return std::toupper(ch1) == std::toupper(ch2);
+                  });
+  return (it != strHaystack.end());
+}
 
 inline ICON operator|(ICON i, ICON j) {
   using T = std::underlying_type_t<ICON>;
@@ -50,6 +63,7 @@ Item::Item(const json& config) {
     name_LOC_ = config["Name_LOC"].get<std::string>();
     title_ = config["Title"].get<std::string>();
     isCoin_ = config["IsCoin"].get<bool>();
+    id_ = config["ID_"].get<std::string>();
 
     if (config.find("ActorConfiguration") != config.end()) {
       for (auto& x : config["ActorConfiguration"].items()) {
@@ -160,3 +174,5 @@ void Item::print() const {
   printf("%s : %s : isEssential = %d\n", string().c_str(), icon_name.c_str(),
          isEssential());
 }
+
+}  // namespace hitman_randomizer

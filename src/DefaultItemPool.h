@@ -7,6 +7,8 @@
 
 using json = nlohmann::json;
 
+namespace hitman_randomizer {
+
 class Item;
 
 // Represents a list of items distributed in a level of a given Senario. Default
@@ -33,3 +35,5 @@ public:
 
   void print() const;
 };
+
+}  // namespace hitman_randomizer

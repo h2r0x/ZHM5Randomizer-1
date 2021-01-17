@@ -1,5 +1,7 @@
 #pragma once
 
+namespace hitman_randomizer {
+
 class MemoryUtils {
  private:
   static void* trampoline_memory_base;
@@ -9,3 +11,5 @@ class MemoryUtils {
   static void DetourVFTCall(void** vft_entry_addr, void* hook_function,
                             void** original_fn_ptr);
 };
+
+}  // namespace hitman_randomizer

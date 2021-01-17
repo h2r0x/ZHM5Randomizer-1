@@ -7,147 +7,152 @@
 #include "ZHM5Randomizer/src/Repository.h"
 #include "ZHM5Randomizer/src/Scenario.h"
 #include "ZHM5Randomizer/src/Config.h"
+#include "ZHM5Randomizer/src/Console.h"
+
+namespace hitman_randomizer {
 
 class DefaultItemPool;
 
-class RandomisationStrategy {
+class RandomizationStrategy {
  protected:
   RandomDrawRepository& repo;
 
   std::shared_ptr<hitman_randomizer::Config> config_;
 
  public:
-  RandomisationStrategy(std::shared_ptr<hitman_randomizer::Config> config);
+  RandomizationStrategy(std::shared_ptr<hitman_randomizer::Config> config);
 
   // Takes Repository ID and returns a new ID according to the internal
-  // randomisation strategy Item IDs that don't have a corresponding item
+  // Randomization strategy Item IDs that don't have a corresponding item
   // configuration in the Repository should be skipped.
   virtual const RepositoryID* randomize(const RepositoryID* in_out_ID) = 0;
 
-  // Called on SceneLoad. This function is intended for stateful randomisation
+  // Called on SceneLoad. This function is intended for stateful Randomization
   // strategies which might require knowledge of the next scene and/or default
   // item pool of that scene to setup their internal state in preparation for
-  // item randomisation.
+  // item Randomization.
   virtual void initialize(Scenario, const DefaultItemPool* const);
 };
 
-class IdentityRandomisation : public RandomisationStrategy {
+class IdentityRandomization : public RandomizationStrategy {
  public:
-  IdentityRandomisation(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
+  IdentityRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
 
-// This randomisation strategy is intended to be used to randomize world items
+// This Randomization strategy is intended to be used to randomize world items
 // during the initial load of a level. It's desiged to be as undistruptive to
 // the game flow as possible.
-class WorldInventoryRandomisation : public RandomisationStrategy {
+class DefaultWorldRandomization : public RandomizationStrategy {
  protected:
   std::queue<const RepositoryID*> item_queue;
 
  public:
- WorldInventoryRandomisation(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
+ DefaultWorldRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override;
   void initialize(Scenario scen,
                   const DefaultItemPool* const default_pool) override;
 };
 
 class OopsAllExplosivesWorldInventoryRandomization
-    : public WorldInventoryRandomisation {
+    : public DefaultWorldRandomization {
  public:
- OopsAllExplosivesWorldInventoryRandomization(std::shared_ptr<hitman_randomizer::Config> config) : WorldInventoryRandomisation(config) {}
+ OopsAllExplosivesWorldInventoryRandomization(std::shared_ptr<hitman_randomizer::Config> config) : DefaultWorldRandomization(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
   void initialize(Scenario scen,
                   const DefaultItemPool* const default_pool) override final;
 };
 
 class TreasureHuntWorldInventoryRandomization
-    : public WorldInventoryRandomisation {
+    : public DefaultWorldRandomization {
  public:
- TreasureHuntWorldInventoryRandomization(std::shared_ptr<hitman_randomizer::Config> config) : WorldInventoryRandomisation(config) {}
+ TreasureHuntWorldInventoryRandomization(std::shared_ptr<hitman_randomizer::Config> config) : DefaultWorldRandomization(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
   void initialize(Scenario scen,
                   const DefaultItemPool* const default_pool) override final;
 };
 
-class NoItemsWorldInventoryRandomization : public WorldInventoryRandomisation {
+class NoItemsWorldInventoryRandomization : public DefaultWorldRandomization {
  public:
- NoItemsWorldInventoryRandomization(std::shared_ptr<hitman_randomizer::Config> config) : WorldInventoryRandomisation(config) {}
+ NoItemsWorldInventoryRandomization(std::shared_ptr<hitman_randomizer::Config> config) : DefaultWorldRandomization(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
   void initialize(Scenario scen,
                   const DefaultItemPool* const default_pool) override final;
 };
 
-class ActionWorldRandomization : public WorldInventoryRandomisation {
+class ActionWorldRandomization : public DefaultWorldRandomization {
  public:
- ActionWorldRandomization(std::shared_ptr<hitman_randomizer::Config> config) : WorldInventoryRandomisation(config) {}
+ ActionWorldRandomization(std::shared_ptr<hitman_randomizer::Config> config) : DefaultWorldRandomization(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
   void initialize(Scenario scen,
                   const DefaultItemPool* const default_pool) override final;
 };
 
 
-class NPCItemRandomisation : public RandomisationStrategy {
+class NPCItemRandomization : public RandomizationStrategy {
  public:
- NPCItemRandomisation(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
+ NPCItemRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
 
 /*
-This randomisation stratgy is intended to be used to randomize 47's starting
+This Randomization stratgy is intended to be used to randomize 47's starting
 inventory. To preserve some intentionallity the randomizer will only randomize
 items within their own category as defined by the InventoryCategoryIcon key in
 the item repository. Those categories are: melee, key, explosives, questitem,
 tool, sniperrifle, assaultrifle, remote, QuestItem, shotgun, suitcase, pistol,
 distraction, poison, Container and smg.
 */
-class HeroInventoryRandomisation : public RandomisationStrategy {
+class DefaultHeroRandomization : public RandomizationStrategy {
  public:
- HeroInventoryRandomisation(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
+ DefaultHeroRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
 
-class StashInventoryRandomisation : public RandomisationStrategy {
+class DefaultStashRandomization : public RandomizationStrategy {
  public:
- StashInventoryRandomisation(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
+ DefaultStashRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
 
 // Randomizes all NPC weapons without type restrictions and replaces flash
 // grenades with frag grenades.
-class HardNPCRandomization : public RandomisationStrategy {
+class HardNPCRandomization : public RandomizationStrategy {
  public:
- HardNPCRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
+ HardNPCRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
 
-class UnlimitedNPCItemRandomization : public RandomisationStrategy {
+class UnlimitedNPCRandomization : public RandomizationStrategy {
  public:
- UnlimitedNPCItemRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
+ UnlimitedNPCRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
 
 
-class SleepyNPCRandomization : public RandomisationStrategy {
+class SleepyNPCRandomization : public RandomizationStrategy {
  public:
- SleepyNPCRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
+ SleepyNPCRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
   bool exception_assigned;
 };
 
-class ChainReactionNPCRandomization : public RandomisationStrategy {
+class ChainReactionNPCRandomization : public RandomizationStrategy {
  public:
- ChainReactionNPCRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomisationStrategy(config) {}
+ ChainReactionNPCRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
 
 class Randomizer {
  private:
   bool enabled;
-  std::unique_ptr<RandomisationStrategy> strategy;
+  std::unique_ptr<RandomizationStrategy> strategy;
 
  public:
-  Randomizer(RandomisationStrategy*);
+  Randomizer(RandomizationStrategy*);
   const RepositoryID* randomize(const RepositoryID* id);
   void initialize(Scenario, const DefaultItemPool* const);
   void disable();
 };
+
+}  // namespace hitman_randomizer

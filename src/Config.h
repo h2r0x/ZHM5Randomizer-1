@@ -54,24 +54,24 @@ public:
     for (auto &word : allowed_words_) {
       if (it.IconString() == word) {
         matches_allowed_word = true;
-      } else if (this->findStringIC(it.title(), word)) {
+      } else if (findStringIC(it.title(), word)) {
         matches_allowed_word = true;
-      } else if (this->findStringIC(it.string(), word)) {
+      } else if (findStringIC(it.string(), word)) {
         matches_allowed_word = true;
       }
     }
     for (auto &word : ignored_words_) {
       if (it.IconString() == word) {
         matches_ignored_word = true;
-      } else if (this->findStringIC(it.title(), word)) {
+      } else if (findStringIC(it.title(), word)) {
         matches_ignored_word = true;
-      } else if (this->findStringIC(it.string(), word)) {
+      } else if (findStringIC(it.string(), word)) {
         matches_ignored_word = true;
       }
     }
 
     if (matches_ignored_word && matches_allowed_word) {
-      spdlog::get("console")->warn(
+      log::warn(
           "The item {} is both allowed and ignored. This is probably bad.",
           it.title());
     }
@@ -87,15 +87,6 @@ public:
     return false;
   }
 
-  const bool findStringIC(const std::string &strHaystack,
-                    const std::string &strNeedle) const {
-    auto it =
-        std::search(strHaystack.begin(), strHaystack.end(), strNeedle.begin(),
-                    strNeedle.end(), [](char ch1, char ch2) {
-                      return std::toupper(ch1) == std::toupper(ch2);
-                    });
-    return (it != strHaystack.end());
-  }
 };
 
 class Config {
@@ -104,8 +95,6 @@ public:
   void Load();
 
   bool show_debug_console() { return showDebugConsole; }
-
-  bool randomize_npc_grenades() { return randomizeNPCGrenades; }
 
   const std::string &world_inventory_randomizer() const {
     return world_inventory_randomizer_;
@@ -130,8 +119,7 @@ private:
   std::string hero_inventory_randomizer_;
   std::string npc_inventory_randomizer_;
   std::string stash_inventory_randomizer_;
-  bool randomizeNPCGrenades;
-  bool showDebugConsole = true;
+  bool showDebugConsole = false;
   bool enableDebugLogging = true;
   bool logToFile;
   int RNGSeed;

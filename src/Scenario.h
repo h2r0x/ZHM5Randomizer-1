@@ -3,6 +3,8 @@
 
 #include "SSceneInitParameters.h"
 
+namespace hitman_randomizer {
+
 class Scenario {
  public:
   static const Scenario NONE;
@@ -64,9 +66,11 @@ class Scenario {
   Scenario(int index);
 };
 
+}  // namespace hitman_randomizer
+
 template <>
-struct std::hash<Scenario> {
-  size_t operator()(const Scenario& scenario) const {
+struct std::hash<hitman_randomizer::Scenario> {
+  size_t operator()(const hitman_randomizer::Scenario& scenario) const {
     return std::hash<int>()(scenario);
   }
 };

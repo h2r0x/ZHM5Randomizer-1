@@ -11,36 +11,35 @@
 #include "ZHM5Randomizer/src/RNG.h"
 #include "ZHM5Randomizer/src/Repository.h"
 
-RandomisationStrategy::RandomisationStrategy(
+namespace hitman_randomizer {
+RandomizationStrategy::RandomizationStrategy(
     std::shared_ptr<hitman_randomizer::Config> config)
     : repo(RandomDrawRepository::inst()), config_(config) {}
 
-void RandomisationStrategy::initialize(Scenario, const DefaultItemPool *const) {
+void RandomizationStrategy::initialize(Scenario, const DefaultItemPool *const) {
 }
 
 const RepositoryID *
-WorldInventoryRandomisation::randomize(const RepositoryID *in_out_ID) {
+DefaultWorldRandomization::randomize(const RepositoryID *in_out_ID) {
   if (repo.contains(*in_out_ID) && item_queue.size()) {
     const RepositoryID *id = item_queue.front();
     item_queue.pop();
-    // spdlog::get("console")->info(
-    //     "WorldInventoryRandomisation::randomize: {}: {} -> {}",
+    // log::info(
+    //     "DefaultWorldRandomization::randomize: {}: {} -> {}",
     //     static_cast<int>(item_queue.size()), repo.getItem(*in_out_ID)->string(),
     //     repo.getItem(*id)->string());
     return id;
   } else {
     if (!item_queue.size()) {
-      spdlog::get("console")->info("WorldInventoryRandomisation::randomize: skipped (queue exhausted) [{}]", in_out_ID->toString());
+      log::info("DefaultWorldRandomization::randomize: skipped (queue exhausted) [{}]", in_out_ID->toString());
     } else {
-      spdlog::get("console")->info("WorldInventoryRandomisation::randomize: skipped (not in repo) [{}]", in_out_ID->toString());
+      log::info("DefaultWorldRandomization::randomize: skipped (not in repo) [{}]", in_out_ID->toString());
     }
     return in_out_ID;
   }
 }
 
-void setupTools(std::vector<const RepositoryID *> &items) {}
-
-void WorldInventoryRandomisation::initialize(
+void DefaultWorldRandomization::initialize(
     Scenario scen, const DefaultItemPool *const default_pool) {
   std::vector<const RepositoryID *> new_item_pool;
 
@@ -57,7 +56,7 @@ void WorldInventoryRandomisation::initialize(
                                    default_item_pool_weapon_count;
 
   repo.getRandom(new_item_pool, random_item_count,
-                 &Item::isNotEssentialAndNotWeapon);
+                 &Item::isItemAcceptableDefaultItem);
 
   // Shuffle item pool
   std::shuffle(new_item_pool.begin(), new_item_pool.end(),
@@ -78,19 +77,19 @@ void WorldInventoryRandomisation::initialize(
     item_queue.push(id);
 
   // // TODO: Move this print code
-  // Console::log("ItemPool report:\n");
-  // Console::log("total size: %d(%d)\n", default_item_pool_size,
+  // log::info("ItemPool report:\n");
+  // log::info("total size: %d(%d)\n", default_item_pool_size,
   //              static_cast<int>(new_item_pool.size()));
-  // Console::log("\tessentials: %d\n", essential_item_count);
-  // Console::log("\tweapons: %d\n",
+  // log::info("\tessentials: %d\n", essential_item_count);
+  // log::info("\tweapons: %d\n",
   //              static_cast<int>(default_item_pool_weapon_count));
-  // Console::log("\trandom: %d\n", random_item_count);
-  // Console::log("\n");
+  // log::info("\trandom: %d\n", random_item_count);
+  // log::info("\n");
 }
 
 const RepositoryID *
 ActionWorldRandomization::randomize(const RepositoryID *in_out_ID) {
-  return WorldInventoryRandomisation::randomize(in_out_ID);
+  return DefaultWorldRandomization::randomize(in_out_ID);
 }
 
 void ActionWorldRandomization::initialize(
@@ -137,7 +136,7 @@ void ActionWorldRandomization::initialize(
 
 const RepositoryID *OopsAllExplosivesWorldInventoryRandomization::randomize(
     const RepositoryID *in_out_ID) {
-  return WorldInventoryRandomisation::randomize(in_out_ID);
+  return DefaultWorldRandomization::randomize(in_out_ID);
 }
 
 void OopsAllExplosivesWorldInventoryRandomization::initialize(
@@ -177,19 +176,19 @@ void OopsAllExplosivesWorldInventoryRandomization::initialize(
     item_queue.push(id);
 
   // TODO: Move this print code
-  Console::log("ItemPool report:\n");
-  Console::log("total size: %d(%d)\n", default_item_pool_size,
+  log::info("ItemPool report:\n");
+  log::info("total size: %d(%d)\n", default_item_pool_size,
                static_cast<int>(new_item_pool.size()));
-  Console::log("\tessentials: %d\n", essential_item_count);
-  Console::log("\tweapons: %d\n",
+  log::info("\tessentials: %d\n", essential_item_count);
+  log::info("\tweapons: %d\n",
                static_cast<int>(default_item_pool_weapon_count));
-  Console::log("\trandom: %d\n", random_item_count);
-  Console::log("\n");
+  log::info("\trandom: %d\n", random_item_count);
+  log::info("\n");
 }
 
 const RepositoryID *TreasureHuntWorldInventoryRandomization::randomize(
     const RepositoryID *in_out_ID) {
-  return WorldInventoryRandomisation::randomize(in_out_ID);
+  return DefaultWorldRandomization::randomize(in_out_ID);
 }
 
 void TreasureHuntWorldInventoryRandomization::initialize(
@@ -230,7 +229,7 @@ void TreasureHuntWorldInventoryRandomization::initialize(
 
 const RepositoryID *
 NoItemsWorldInventoryRandomization::randomize(const RepositoryID *in_out_ID) {
-  return WorldInventoryRandomisation::randomize(in_out_ID);
+  return DefaultWorldRandomization::randomize(in_out_ID);
 }
 
 /** Replaces all non-essential, non-quest items with coins, and all placed
@@ -271,10 +270,10 @@ void NoItemsWorldInventoryRandomization::initialize(
 }
 
 const RepositoryID *
-UnlimitedNPCItemRandomization::randomize(const RepositoryID *in_out_ID) {
+UnlimitedNPCRandomization::randomize(const RepositoryID *in_out_ID) {
   if (!repo.contains(*in_out_ID)) {
-    Console::log(
-        "NPCItemRandomisation::randomize: skipped (not in repo) [%s]\n",
+    log::info(
+        "NPCItemRandomization::randomize: skipped (not in repo) [{}]\n",
         in_out_ID->toString().c_str());
     return in_out_ID;
   }
@@ -284,8 +283,8 @@ UnlimitedNPCItemRandomization::randomize(const RepositoryID *in_out_ID) {
   // Only NPC weapons are randomized here, return original item if item isn't a
   // weapon
   if (!in_item->isWeapon()) {
-    Console::log(
-        "NPCItemRandomisation::randomize: skipped (not a weapon) [%s]\n",
+    log::info(
+        "NPCItemRandomization::randomize: skipped (not a weapon) [{}]\n",
         repo.getItem(*in_out_ID)->string().c_str());
     return in_out_ID;
   }
@@ -296,10 +295,10 @@ UnlimitedNPCItemRandomization::randomize(const RepositoryID *in_out_ID) {
 
 // TODO: factor this fn
 const RepositoryID *
-NPCItemRandomisation::randomize(const RepositoryID *in_out_ID) {
+NPCItemRandomization::randomize(const RepositoryID *in_out_ID) {
   if (!repo.contains(*in_out_ID)) {
-    Console::log(
-        "NPCItemRandomisation::randomize: skipped (not in repo) [%s]\n",
+    log::info(
+        "NPCItemRandomization::randomize: skipped (not in repo) [{}]\n",
         in_out_ID->toString().c_str());
     return in_out_ID;
   }
@@ -309,18 +308,18 @@ NPCItemRandomisation::randomize(const RepositoryID *in_out_ID) {
   // Only NPC weapons are randomized here, return original item if item isn't a
   // weapon
   if (!in_item->isWeapon()) {
-    Console::log(
-        "NPCItemRandomisation::randomize: skipped (not a weapon) [%s]\n",
+    log::info(
+        "NPCItemRandomization::randomize: skipped (not a weapon) [{}]\n",
         repo.getItem(*in_out_ID)->string().c_str());
     return in_out_ID;
   }
 
   auto sameType = [&in_item](const Item &item) {
-    return in_item->getType() == item.getType();
+    return in_item->getType() == item.getType() && item.isItemAcceptableDefaultItem();
   };
 
   auto randomized_item = repo.getRandom(sameType);
-  Console::log("NPCItemRandomisation::randomize: %s -> %s\n",
+  log::info("NPCItemRandomization::randomize: {} -> {}\n",
                repo.getItem(*in_out_ID)->string().c_str(),
                repo.getItem(*randomized_item)->string().c_str());
 
@@ -328,12 +327,12 @@ NPCItemRandomisation::randomize(const RepositoryID *in_out_ID) {
 }
 
 const RepositoryID *
-HeroInventoryRandomisation::randomize(const RepositoryID *in_out_ID) {
-  Console::log("HeroInventoryRandomisation::randomize entered with %s\n",
+DefaultHeroRandomization::randomize(const RepositoryID *in_out_ID) {
+  log::info("DefaultHeroRandomization::randomize entered with {}\n",
                in_out_ID->toString().c_str());
   if (!repo.contains(*in_out_ID)) {
-    Console::log(
-        "HeroInventoryRandomisation::randomize: skipped (not in repo) [%s]\n",
+    log::info(
+        "DefaultHeroRandomization::randomize: skipped (not in repo) [{}]\n",
         in_out_ID->toString().c_str());
     return in_out_ID;
   }
@@ -341,11 +340,11 @@ HeroInventoryRandomisation::randomize(const RepositoryID *in_out_ID) {
   auto in_item = repo.getItem(*in_out_ID);
 
   auto sameType = [&in_item](const Item &item) {
-    return in_item->getType() == item.getType();
+    return in_item->getType() == item.getType() && item.isItemAcceptableDefaultItem();
   };
 
   auto randomized_item = repo.getRandom(sameType);
-  Console::log("HeroInventoryRandomisation::randomize: %s -> %s\n",
+  log::info("DefaultHeroRandomization::randomize: {} -> {}\n",
                repo.getItem(*in_out_ID)->string().c_str(),
                repo.getItem(*randomized_item)->string().c_str());
 
@@ -353,10 +352,10 @@ HeroInventoryRandomisation::randomize(const RepositoryID *in_out_ID) {
 };
 
 const RepositoryID *
-StashInventoryRandomisation::randomize(const RepositoryID *in_out_ID) {
+DefaultStashRandomization::randomize(const RepositoryID *in_out_ID) {
   if (!repo.contains(*in_out_ID)) {
-    Console::log(
-        "StashInventoryRandomisation::randomize: skipped (not in repo) [%s]\n",
+    log::info(
+        "DefaultStashRandomization::randomize: skipped (not in repo) [{}]\n",
         in_out_ID->toString().c_str());
     return in_out_ID;
   }
@@ -364,23 +363,23 @@ StashInventoryRandomisation::randomize(const RepositoryID *in_out_ID) {
   auto in_item = repo.getItem(*in_out_ID);
 
   auto sameType = [&in_item](const Item &item) {
-    return in_item->getType() == item.getType();
+    return in_item->getType() == item.getType() && item.isItemAcceptableDefaultItem();
   };
 
   auto randomized_item = repo.getRandom(sameType);
-  Console::log("StashInventoryRandomisation::randomize: %s -> %s\n",
+  log::info("DefaultStashRandomization::randomize: {} -> {}\n",
                repo.getItem(*in_out_ID)->string().c_str(),
                repo.getItem(*randomized_item)->string().c_str());
 
   return randomized_item;
 };
 
-Randomizer::Randomizer(RandomisationStrategy *strategy_) {
-  strategy = std::unique_ptr<RandomisationStrategy>(strategy_);
+Randomizer::Randomizer(RandomizationStrategy *strategy_) {
+  strategy = std::unique_ptr<RandomizationStrategy>(strategy_);
 }
 
 const RepositoryID *Randomizer::randomize(const RepositoryID *id) {
-  // printf("%s\n", id->toString().c_str());
+  // printf("{}\n", id->toString().c_str());
   if (enabled)
     return strategy->randomize(id);
   else
@@ -396,15 +395,15 @@ void Randomizer::initialize(Scenario scen,
 void Randomizer::disable() { enabled = false; }
 
 const RepositoryID *
-IdentityRandomisation::randomize(const RepositoryID *in_out_ID) {
+IdentityRandomization::randomize(const RepositoryID *in_out_ID) {
   return in_out_ID;
 }
 
 const RepositoryID *
 HardNPCRandomization::randomize(const RepositoryID *in_out_ID) {
   if (!repo.contains(*in_out_ID)) {
-    Console::log(
-        "NPCItemRandomisation::randomize: skipped (not in repo) [%s]\n",
+    log::info(
+        "NPCItemRandomization::randomize: skipped (not in repo) [{}]\n",
         in_out_ID->toString().c_str());
     return in_out_ID;
   }
@@ -412,16 +411,16 @@ HardNPCRandomization::randomize(const RepositoryID *in_out_ID) {
   auto in_item = repo.getItem(*in_out_ID);
 
   // flash grenades -> frag grenades
-  if ((*in_out_ID == RepositoryID("042fae7b-fe9e-4a83-ac7b-5c914a71b2ca")) &&
-      config_->randomize_npc_grenades())
+  if ((*in_out_ID == RepositoryID("042fae7b-fe9e-4a83-ac7b-5c914a71b2ca"))) {
     return repo.getStablePointer(
         RepositoryID("3f9cf03f-b84f-4419-b831-4704cff9775c"));
+  }
 
   // Only NPC weapons are randomized here, return original item if item isn't a
   // weapon
   if (!in_item->isWeapon()) {
-    Console::log(
-        "NPCItemRandomisation::randomize: skipped (not a weapon) [%s]\n",
+    log::info(
+        "NPCItemRandomization::randomize: skipped (not a weapon) [{}]\n",
         repo.getItem(*in_out_ID)->string().c_str());
     return in_out_ID;
   }
@@ -459,8 +458,8 @@ HardNPCRandomization::randomize(const RepositoryID *in_out_ID) {
 const RepositoryID *
 SleepyNPCRandomization::randomize(const RepositoryID *in_out_ID) {
   if (!repo.contains(*in_out_ID)) {
-    Console::log(
-        "SleepyNPCRandomization::randomize: skipped (not in repo) [%s]\n",
+    log::info(
+        "SleepyNPCRandomization::randomize: skipped (not in repo) [{}]\n",
         in_out_ID->toString().c_str());
     return in_out_ID;
   }
@@ -489,9 +488,9 @@ ChainReactionNPCRandomization::randomize(const RepositoryID *in_out_ID) {
       RepositoryID("370580fc-7fcf-47f8-b994-cebd279f69f9"));
 
   if (!repo.contains(*in_out_ID)) {
-    Console::log(
+    log::info(
         "ChainReactionNPCRandomization::randomize: skipped (not in repo) "
-        "[%s]\n",
+        "[{}]\n",
         in_out_ID->toString().c_str());
     return in_out_ID;
   }
@@ -527,3 +526,5 @@ ChainReactionNPCRandomization::randomize(const RepositoryID *in_out_ID) {
     }
   }
 }
+
+}  // namespace hitman_randomizer
