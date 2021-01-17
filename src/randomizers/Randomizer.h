@@ -89,9 +89,9 @@ class ActionWorldRandomization : public DefaultWorldRandomization {
 };
 
 
-class NPCItemRandomization : public RandomizationStrategy {
+class DefaultNPCRandomization : public RandomizationStrategy {
  public:
- NPCItemRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
+ DefaultNPCRandomization(std::shared_ptr<hitman_randomizer::Config> config) : RandomizationStrategy(config) {}
   const RepositoryID* randomize(const RepositoryID* in_out_ID) override final;
 };
 

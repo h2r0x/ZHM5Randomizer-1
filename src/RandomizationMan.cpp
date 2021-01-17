@@ -44,7 +44,7 @@ std::unordered_map<std::string, RandomizationStrategy *(*)(std::shared_ptr<hitma
 
 std::unordered_map<std::string, RandomizationStrategy *(*)(std::shared_ptr<hitman_randomizer::Config>)> npcRandomizers{
     {"NONE", &createInstance<IdentityRandomization>},
-    {"DEFAULT", &createInstance<NPCItemRandomization>},
+    {"DEFAULT", &createInstance<DefaultNPCRandomization>},
     {"UNLIMITED", &createInstance<UnlimitedNPCRandomization>},
     {"HARD", &createInstance<HardNPCRandomization>},
     {"SLEEPY", &createInstance<SleepyNPCRandomization>},

@@ -5,6 +5,14 @@
 
 namespace hitman_randomizer {
 
+bool hasEnding (std::string const &fullString, std::string const &ending) {
+    if (fullString.length() >= ending.length()) {
+        return (0 == fullString.compare (fullString.length() - ending.length(), ending.length(), ending));
+    } else {
+        return false;
+    }
+}
+
 bool findStringIC(const std::string &strHaystack,
                   const std::string &strNeedle) {
   auto it =
@@ -171,8 +179,7 @@ void Item::print() const {
       icon_name = i.first;
       break;
     }
-  printf("%s : %s : isEssential = %d\n", string().c_str(), icon_name.c_str(),
-         isEssential());
+    log::info("{} ({}) : isEssential = {}", string().c_str(), icon_name.c_str(), isEssential());
 }
 
 }  // namespace hitman_randomizer

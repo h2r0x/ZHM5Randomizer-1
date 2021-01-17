@@ -63,9 +63,8 @@ size_t DefaultItemPool::getCount(const RepositoryID &id) const {
 
 void DefaultItemPool::print() const {
   auto repo = RandomDrawRepository::inst();
-  log::info("DefaultPool report:\n");
+  log::info("DefaultPool report:");
   for (const auto &id : ids) {
-    log::info("\t");
     repo.getItem(id)->print();
   }
 }

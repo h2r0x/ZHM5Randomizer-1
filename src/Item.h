@@ -13,6 +13,9 @@ using json = nlohmann::json;
 
 namespace hitman_randomizer {
 
+// Stolen from https://stackoverflow.com/questions/874134/
+bool hasEnding (std::string const &fullString, std::string const &ending);
+
 bool findStringIC(const std::string &strHaystack,
                   const std::string &strNeedle);
 
@@ -92,6 +95,11 @@ public:
     if (!isNotEssentialAndNotWeapon()) {
       return false;
     }
+    // "MK 2" branded items
+    if (hasEnding(title(), "S2")) {
+      return false;
+    }
+
     if (isTool()) {
       // Default crowbar
       if (GetId() == "01ed6d15-e26e-4362-b1a6-363684a7d0fd") {
@@ -107,6 +115,10 @@ public:
       }
       // Pristine lockpick
       if (GetId() == "2b2bdde8-19d2-40de-a2fa-f2ddf225d040") {
+        return true;
+      }
+      // Keycard hacker
+      if (GetId() == "b970a355-4296-4acc-9ec9-584e69a79eed") {
         return true;
       }
       return false;
@@ -180,6 +192,7 @@ public:
     std::string id_;
 
 };
+
 
 } // namespace hitman_randomizer
 
